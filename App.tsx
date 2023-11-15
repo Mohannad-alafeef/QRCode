@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React,{useEffect, useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -19,13 +19,17 @@ const Stack =createNativeStackNavigator();
 
 function App(): JSX.Element {
   
+  const userToken=(globalThis as any).user;
+  const isStudent=(globalThis as any).student;
+  const isAdmin=(globalThis as any).admin;
+
   return (
-  <NavigationContainer>
+   <NavigationContainer>
     <Stack.Navigator>
-    <Stack.Screen name='login' component={Login} options={{headerShown:false}}/>
-    <Stack.Screen name='admin' component={Admin} options={{headerShown:false}}/>
-    <Stack.Screen name='student' component={student} options={{headerShown:false}}/>
- </Stack.Navigator>
+    {userToken == null&&<Stack.Screen name='login' component={Login} options={{headerShown:false}}/>}
+    {isStudent==null && <Stack.Screen name='admin' component={Admin} options={{headerShown:false}}/>}
+    {isAdmin==null && <Stack.Screen name='student' component={student} options={{headerShown:false}}/>} 
+    </Stack.Navigator>
  </NavigationContainer> 
     
   );

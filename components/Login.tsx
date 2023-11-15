@@ -19,9 +19,9 @@ function App({navigation,route}:any): JSX.Element {
     const[pass,setPass]=useState('');
     const [email,setEmail]=useState('');
     const [disableLogin,setDis] =useState(true);
-    (globalThis as any).url="https://c9e6-109-107-228-70.ngrok-free.app/api";
-   // let token: any;
-    
+    (globalThis as any).url="https://7ec2-109-107-225-195.ngrok-free.app/api";
+    let token: any;
+
 
     useEffect(()=>{
 
@@ -36,32 +36,40 @@ function App({navigation,route}:any): JSX.Element {
             'NativeBase: the contrast ratio of',
             "[react-native-gesture-handler]"+
             "Seems like you\'re using an old API with gesture components, check out new Gesture system",
-        ])
-
+        ]);
 
     },[email,pass])
 
 
   const CheckValidation=async()=>{
-    
-    axios.post((globalThis as any).url+'/JWT',{
-      "username":email,
-      "passwordd":pass
+  
+    axios.post((globalThis as any).url+'/Auth',{
+      "Email":email,
+      "Password":pass
     },{headers:{
       'Content-Type':'application/json'
     }}).then((res)=>{
-    const token=jwt_decode(res.data);
+ 
+      token=jwt_decode(res.data);
+      (globalThis as any).user=token;
 
-      console.log("token");
-      if(token){
+      if(token.roleId == 1){
         console.log(token);
-        (globalThis as any).userName=token.username;
-      
         navigation.reset({
           index: 0,
-          routes: [{ name: '' }],
+          routes: [{ name: 'admin' }],
         });
-        navigation.navigate('');
+        (globalThis as any).admin=true,
+        navigation.navigate('admin');
+      }
+      else if(token.roleId == 2){
+        console.log(token);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'student' }],
+        });
+        (globalThis as any).student=true,
+        navigation.navigate('student');
       }
       else{
  
@@ -75,12 +83,7 @@ function App({navigation,route}:any): JSX.Element {
 
    
   }
-  const Test=()=>{
-    if(email=='1'&& pass=='1')
-     navigation.navigate('admin');
-    else  if(email=='2'&& pass=='2')
-    navigation.navigate('student');
-  }
+
   return(
 
     <SafeAreaView>
@@ -100,7 +103,7 @@ function App({navigation,route}:any): JSX.Element {
     <Icon onPress={()=>setFlagPass(!PasswordDisable)} name='eye' size={16} style={{position:'absolute',right:10,padding:10}}/>
     </TouchableOpacity>
         </View>
-        <Button style={styles.loginButtom} onPress={()=>Test()} disabled={disableLogin?true:false}>Login</Button>
+        <Button style={styles.loginButtom} onPress={()=>CheckValidation()} disabled={disableLogin?true:false}>Login</Button>
     </View>
     </ScrollView>
     </ImageBackground>
