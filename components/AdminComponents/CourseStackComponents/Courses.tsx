@@ -23,6 +23,11 @@ function Courses() {
   }, []);
 
   useEffect(() => {
+    if (courses) {
+      setfilterdCourses(courses);
+    }
+  }, [courses]);
+  useEffect(() => {
     if (searchQuery && courses) {
       filterCourses(setfilterdCourses, courses, searchQuery);
     } else {
@@ -44,7 +49,16 @@ function Courses() {
         renderItem={({item}) => (
           <Card style={[styles.my_5, styles.roundLess]}>
             <Card.Content>
-              <PaperText variant="titleLarge">{item.courseName}</PaperText>
+              <PaperText style={styles.my_5} variant="titleLarge">
+                {item.courseName} - {item.instructor}
+              </PaperText>
+              <PaperText style={styles.my_5} variant="titleMedium">
+                {new Date(item.startDate).toDateString()} -
+                {new Date(item.endDate).toDateString()}
+              </PaperText>
+              <PaperText style={styles.my_5} variant="titleMedium">
+                {item.time}
+              </PaperText>
             </Card.Content>
             <Card.Cover
               style={[styles.roundLess]}
