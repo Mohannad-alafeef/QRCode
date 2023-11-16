@@ -133,6 +133,7 @@ function App({navigation, route}: any): JSX.Element {
             <Button
               style={styles.loginButtom}
               onPress={() => CheckValidation()}
+              mode="contained"
               disabled={disableLogin ? true : false}>
               Login
             </Button>
