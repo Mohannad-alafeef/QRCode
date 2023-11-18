@@ -16,6 +16,8 @@ import {
 } from 'react-native-paper';
 
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import * as eva from '@eva-design/eva';
+import {ApplicationProvider} from '@ui-kitten/components';
 import {
   NavigationContainer,
   DarkTheme as NavigationDarkTheme,
@@ -65,35 +67,37 @@ function App(): JSX.Element {
     colorScheme === 'dark' ? CombinedDarkTheme : CombinedDefaultTheme;
 
   return (
-    <SafeAreaProvider>
-      <PaperProvider theme={CombinedDefaultTheme}>
-        <NavigationContainer theme={CombinedDefaultTheme}>
-          <Stack.Navigator>
-            {userToken == null && (
-              <Stack.Screen
-                name="login"
-                component={Login}
-                options={{headerShown: false}}
-              />
-            )}
-            {isStudent == null && (
-              <Stack.Screen
-                name="admin"
-                component={Admin}
-                options={{headerShown: false}}
-              />
-            )}
-            {isAdmin == null && (
-              <Stack.Screen
-                name="student"
-                component={student}
-                options={{headerShown: false}}
-              />
-            )}
-          </Stack.Navigator>
-        </NavigationContainer>
-      </PaperProvider>
-    </SafeAreaProvider>
+    <ApplicationProvider {...eva} theme={eva.light}>
+      <SafeAreaProvider>
+        <PaperProvider theme={CombinedDefaultTheme}>
+          <NavigationContainer theme={CombinedDefaultTheme}>
+            <Stack.Navigator>
+              {userToken == null && (
+                <Stack.Screen
+                  name="login"
+                  component={Login}
+                  options={{headerShown: false}}
+                />
+              )}
+              {isStudent == null && (
+                <Stack.Screen
+                  name="admin"
+                  component={Admin}
+                  options={{headerShown: false}}
+                />
+              )}
+              {isAdmin == null && (
+                <Stack.Screen
+                  name="student"
+                  component={student}
+                  options={{headerShown: false}}
+                />
+              )}
+            </Stack.Navigator>
+          </NavigationContainer>
+        </PaperProvider>
+      </SafeAreaProvider>
+    </ApplicationProvider>
   );
 }
 
