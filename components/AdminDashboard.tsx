@@ -5,9 +5,9 @@ import {createMaterialBottomTabNavigator} from 'react-native-paper/react-navigat
 
 import {StyleSheet, Text, useColorScheme, View} from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import CourseStack from './AdminComponents/CourseStack';
 import StudentStack from './AdminComponents/StudentStack';
 import AdminProfile from './AdminComponents/AdminProfile';
+import Courses from './AdminComponents/Courses';
 
 const Stack = createNativeStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
@@ -16,13 +16,12 @@ function App(): JSX.Element {
   return (
     <Tab.Navigator>
       <Tab.Screen
-        name="CoursesStack"
-        component={CourseStack}
+        name="Courses"
+        component={Courses}
         options={{
           tabBarIcon: props => (
             <Icon name="book" size={20} color={props.color} />
           ),
-          title: 'Courses',
         }}
       />
       <Tab.Screen
