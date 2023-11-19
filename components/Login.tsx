@@ -35,17 +35,9 @@ function App({navigation, route}: any): JSX.Element {
   (globalThis as any).url = 'https://a968-212-34-22-177.ngrok-free.app/api';
   let token: any;
 
- 
-    const[pass,setPass]=useState('');
-    const [email,setEmail]=useState('');
-    const [disableLogin,setDis] =useState(true);
-    (globalThis as any).url="https://7085-2a01-9700-1590-b00-f434-1871-ac4e-2512.ngrok-free.app/api";
-    let token: any;
-
   useEffect(() => {
     if (email != '' && pass != '') setDis(false);
     else setDis(true);
-
 
     LogBox.ignoreLogs(['Reanimated 2']);
     LogBox.ignoreLogs([
@@ -74,70 +66,6 @@ function App({navigation, route}: any): JSX.Element {
       .then(res => {
         token = jwt_decode(res.data);
         (globalThis as any).user = token;
-        if(email!=''&& pass !='')
-        setDis(false);
-        else setDis(true);
-
-        LogBox.ignoreLogs(['Reanimated 2']);
-        LogBox.ignoreLogs([
-            'ViewPropTypes will be removed from React Native. Migrate to ViewPropTypes'+
-            'exported from \'deprecated-react-native-prop-types\'.',
-            'NativeBase: the contrast ratio of',
-            "[react-native-gesture-handler]"+
-            "Seems like you\'re using an old API with gesture components, check out new Gesture system",
-        ]);
-
-    },[email,pass])
-
-
-  const CheckValidation= async ()=>{
-    console.log((globalThis as any).url+'/Auth');
-    console.log(email);
-    console.log(pass);
-    
-  
-    await axios.post((globalThis as any).url+'/Auth',{
-      "Email":email,
-      "Password":pass
-    },{headers:{
-      'Content-Type':'application/json'
-    }}).then((res)=>{
- 
-      token=jwt_decode(res.data);
-      (globalThis as any).user=token;
-
-      if(token.roleId == 1){
-        console.log(token);
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'admin' }],
-        });
-        (globalThis as any).admin=true,
-        navigation.navigate('admin');
-      }
-      else if(token.roleId == 2){
-        console.log(token);
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'student' }],
-        });
-        (globalThis as any).student=true,
-        navigation.navigate('student');
-      }
-      else{
- 
-        Alert.alert('username or password is incorrect');
-      }
-    }).catch((error)=>{
-      console.log(error);
-      Alert.alert('username or password is incorrect');
-    })
-
-
-   
-  }
-
-  return(
 
         if (token.roleId == 1) {
           console.log(token);
@@ -161,7 +89,6 @@ function App({navigation, route}: any): JSX.Element {
         Alert.alert('username or password is incorrect');
       });
   };
-
 
   return (
     <SafeAreaView>

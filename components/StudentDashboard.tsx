@@ -259,48 +259,6 @@ const styles = StyleSheet.create({
 
 });
 
-// const styles = StyleSheet.create({
-//   mainContainer: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     paddingTop: 10,
-//   },
-//   card: {
-//     marginVertical: 8,
-//     width: 350,
-//     backgroundColor: 'white',
-//     borderRadius: 10,
-//     padding: 16,
-//     shadowColor: '#000',
-//     shadowOffset: {
-//       width: 0,
-//       height: 2,
-//     },
-//     shadowOpacity: 0.25,
-//     shadowRadius: 3.84,
-//     elevation: 5,
-//   },
-//   detailsPage: {
-//     alignItems: 'flex-start',
-//   },
-//   image: {
-//     width: '100%',
-//     height: 200, // Adjust the height as needed
-//     borderRadius: 8, // Add border radius for a rounded look
-//     marginBottom: 12,
-//   },
-//   Text: {
-//     fontSize: 20,
-//     fontWeight: 'bold', // Add bold for emphasis
-//     marginBottom: 8,
-//   },
-//   Text1: {
-//     fontSize: 17,
-//     color: 'gray', // Adjust color for a subtle look
-//   },
-// });
-
 export default App;
 
 

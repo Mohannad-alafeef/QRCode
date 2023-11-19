@@ -22,11 +22,8 @@
     "jwt-decode": "^3.1.2",
     "react": "18.2.0",
     "react-native": "^0.72.6",
-<<<<<<< HEAD
-=======
     "react-native-blob-util": "^0.19.4",
     "react-native-document-picker": "^9.0.1",
->>>>>>> c05cf40c3672d1e51c3497276c537e04f0a854ce
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.13.4",
     "react-native-html-to-pdf": "^0.12.0",
