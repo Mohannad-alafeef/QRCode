@@ -12,6 +12,7 @@ import {
   Modal,
 } from 'react-native-paper';
 import {launchImageLibrary} from 'react-native-image-picker';
+import {api} from '../../Configs/Connection';
 
 function Courses() {
   const [courses, setCourses] = useState<CourseModel[]>();
@@ -28,10 +29,9 @@ function Courses() {
     setVisible(true);
   };
   const hideModal = () => setVisible(false);
-  let url = (globalThis as any).url as string;
   useEffect(() => {
     axios
-      .get(url + '/Course')
+      .get(api + '/Course')
       .then(res => res.data)
       .then(data => setCourses(data))
       .catch(e => console.log(e));
@@ -167,7 +167,7 @@ function Courses() {
 }
 
 const update = async (item: any): Promise<any> => {
-  return await axios.put((globalThis as any).url + '/Course/Update', item, {
+  return await axios.put(api + '/Course/Update', item, {
     headers: {'Content-Type': 'application/json'},
   });
 };

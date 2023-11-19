@@ -26,7 +26,8 @@ const CoursesScreen = () => {
   return <Text>courses</Text>;
 };
 
-function App(): JSX.Element {
+function StudentDashboard({route}: any): JSX.Element {
+  const {user} = route.params;
   return (
     <>
       <Tab.Navigator
@@ -49,6 +50,7 @@ function App(): JSX.Element {
               <Icon name="user" size={20} color={'#abdcfa'} />
             ),
           }}
+          initialParams={{user: user}}
         />
       </Tab.Navigator>
     </>
@@ -57,4 +59,4 @@ function App(): JSX.Element {
 
 const styles = StyleSheet.create({});
 
-export default App;
+export default StudentDashboard;
