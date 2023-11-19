@@ -1,6 +1,6 @@
 export enum CourseStatus {
-  'Enroll',
-  'Passed',
-  'Failed',
-  'Certified',
+  Enroll = 'Enroll',
+  Passed = 'Passed',
+  Failed = 'Failed',
+  Certified = 'Certified',
 }

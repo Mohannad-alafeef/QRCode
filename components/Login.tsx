@@ -32,7 +32,7 @@ function App({navigation, route}: any): JSX.Element {
   const [pass, setPass] = useState('');
   const [email, setEmail] = useState('');
   const [disableLogin, setDis] = useState(true);
-  (globalThis as any).url = 'https://af54-212-34-22-177.ngrok-free.app/api';
+  (globalThis as any).url = 'https://a968-212-34-22-177.ngrok-free.app/api';
   let token: any;
 
   useEffect(() => {
