@@ -1,5 +1,5 @@
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {Button, FlatList, StyleSheet, Text, View} from 'react-native';
+import {Button, FlatList, Image, StyleSheet, Text, View} from 'react-native';
 import {CourseModel} from '../../../Models/CourseModel';
 import QRCode from 'react-native-qrcode-svg';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
@@ -20,6 +20,7 @@ import {IndexPath, Layout, Select, SelectItem} from '@ui-kitten/components';
 import {Alert} from 'react-native';
 import {pdfTemplate} from '../../../Configs/pdfTemplate';
 import {generatePDF} from '../../../Services/UserCourseService';
+import RNFS from 'react-native-fs';
 
 function StudentCourses({route, navigation}: any) {
   const {firstName, lastName, studentId, imageUrl} = route.params;
@@ -42,25 +43,45 @@ function StudentCourses({route, navigation}: any) {
   const [selectedIndex, setSelectedIndex] = useState<IndexPath>(
     new IndexPath(0),
   );
-  const stage1 = 'generating pdf file';
+  const stage1 = 'Generating pdf file...';
+  const stage2 = 'Uploading the file...';
   const [certifyStage, setCertifyStage] = useState<string>(stage1);
   const [certifyModal, setCertifyModal] = useState<boolean>(false);
   const [pdfData, setPdfData] = useState<UserCourse>();
+  const [pdfBackground, setPdfBackground] = useState<string>();
+  const [harmonyLogo, setHarmonyLogo] = useState<string>();
+  const [thalufLogo, setThalufLogo] = useState<string>();
   const [pdfOptions, setPdfOptions] = useState<{
     html: string;
     fileName: string;
     directory: string;
+    height: number;
+    width: number;
   }>({
     html: '',
     fileName: `invoice`,
     directory: 'Invoices',
+    height: 900,
+    width: 1270,
   });
 
+  RNFS.readFileAssets('CertificationBackground.png', 'base64').then(r =>
+    setPdfBackground(r),
+  );
+  RNFS.readFileAssets('harmony_logo.jpeg', 'base64').then(r =>
+    setHarmonyLogo(r),
+  );
+  RNFS.readFileAssets('tahalufuae_logo.jpeg', 'base64').then(r =>
+    setThalufLogo(r),
+  );
+
   const displayValue = Object.keys(CourseStatus).filter(
-    (v, _i) => isNaN(Number(v)) && v !== 'Certified',
+    (v, _i) => v !== CourseStatus.Certified,
   )[selectedIndex.row];
   const showModal = (item: UserCourse) => {
-    setSelectedIndex(new IndexPath(CourseStatus[item.status]));
+    setSelectedIndex(
+      new IndexPath(Object.keys(CourseStatus).indexOf(item.status)),
+    );
     setSelectedUserCourse(item);
     setVisible(true);
   };
@@ -82,12 +103,52 @@ function StudentCourses({route, navigation}: any) {
   useEffect(() => {
     if (qrCode) {
       qrCode.toDataURL((data: any) => {
-        setPdfOptions(prev => ({...prev, html: pdfTemplate(data)}));
-
-        console.log('qr ' + JSON.stringify(pdfOptions));
+        setPdfOptions(prev => ({
+          ...prev,
+          html: pdfTemplate(data, pdfBackground!, thalufLogo, harmonyLogo),
+        }));
       });
     }
   }, [pdfData]);
+  useEffect(() => {
+    if (pdfOptions) {
+      generatePDF(pdfOptions).then(pdf => {
+        setCertifyStage(stage2);
+        const fData = new FormData();
+        fData.append('userCourseId', pdfData?.id.toString());
+        fData.append('dateOfIssuance', new Date().toDateString());
+        fData.append('expDate', new Date().toDateString());
+        fData.append('image', {
+          uri: 'file://' + pdf.filePath,
+          name: 'Certify.pdf',
+          type: 'application/pdf',
+        });
+        axios
+          .post(url + `/Certification`, fData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+          .then(v => {
+            update({
+              ...pdfData,
+              status: CourseStatus.Certified,
+            })
+              .then(r => {
+                console.log(r);
+                setRefresh(!refresh);
+                setCertifyModal(false);
+              })
+              .catch(e => {
+                console.log(e);
+                setCertifyModal(false);
+              });
+            console.log(v);
+          })
+          .catch(e => console.log('s2 ' + e));
+      });
+    }
+  }, [pdfOptions]);
   //   useEffect(() => {
   //     if (searchQuery && courses) {
   //       filterCourses(setfilterdCourses, courses, searchQuery);
@@ -97,13 +158,6 @@ function StudentCourses({route, navigation}: any) {
   //   }, [searchQuery]);
   return (
     <View style={styles.container}>
-      {true && (
-        <QRCode
-          getRef={c => setQrCode(c)}
-          value={userCourses ? userCourses![0].course.imagUrl : 'wadawd'}
-          logo={{}}
-        />
-      )}
       <Searchbar
         placeholder="Search"
         onChangeText={onChangeSearch}
@@ -138,12 +192,12 @@ function StudentCourses({route, navigation}: any) {
               source={{uri: item.course.imagUrl}}
             />
             <Card.Actions>
-              {item.status != CourseStatus[3] && (
+              {item.status != CourseStatus.Certified && (
                 <>
                   <PaperButton onPress={() => showModal(item)} mode="contained">
                     Update
                   </PaperButton>
-                  {item.status == CourseStatus[1] && (
+                  {item.status == CourseStatus.Passed && (
                     <PaperButton
                       onPress={() =>
                         Alert.alert(
@@ -160,9 +214,6 @@ function StudentCourses({route, navigation}: any) {
                                 setCertifyStage(stage1);
                                 setCertifyModal(true);
                                 setPdfData(item);
-                                generatePDF(pdfOptions).then(pdf => {
-                                  setCertifyModal(false);
-                                });
                               },
                             },
                           ],
@@ -204,11 +255,11 @@ function StudentCourses({route, navigation}: any) {
               setSelectedIndex(index);
               setSelectedUserCourse((prev: any) => ({
                 ...prev,
-                status: CourseStatus[index.row],
+                status: Object.keys(CourseStatus)[index.row],
               }));
             }}>
             {Object.keys(CourseStatus)
-              .filter((v, _i) => isNaN(Number(v)) && v !== 'Certified')
+              .filter((v, _i) => v !== CourseStatus.Certified)
               .map(renderOption)}
           </Select>
 
@@ -233,8 +284,13 @@ function StudentCourses({route, navigation}: any) {
       </Portal>
       <Modal visible={certifyModal} onDismiss={() => setCertifyModal(false)}>
         <Card style={[styles.roundLess, styles.p_7, styles.m_5]}>
-          <Card.Content>
-            <Text>{certifyStage}</Text>
+          <Card.Content style={styles.qrDialog}>
+            <QRCode
+              getRef={c => setQrCode(c)}
+              value={userCourses ? userCourses![0].course.imagUrl : 'wadawd'}
+              logo={{}}
+            />
+            <PaperText variant="titleMedium">{certifyStage}</PaperText>
           </Card.Content>
         </Card>
       </Modal>
@@ -283,6 +339,7 @@ const styles = StyleSheet.create({
   },
   qrDialog: {
     justifyContent: 'center',
+    alignItems: 'center',
   },
   p_7: {
     padding: 7,
