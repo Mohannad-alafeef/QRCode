@@ -21,6 +21,7 @@ import {Alert} from 'react-native';
 import {pdfTemplate} from '../../../Configs/pdfTemplate';
 import {generatePDF} from '../../../Services/UserCourseService';
 import RNFS from 'react-native-fs';
+import {api} from '../../../Configs/Connection';
 
 function StudentCourses({route, navigation}: any) {
   const {firstName, lastName, studentId, imageUrl} = route.params;
@@ -31,7 +32,6 @@ function StudentCourses({route, navigation}: any) {
     });
   });
   //usf var
-  let url = (globalThis as any).url as string;
   const [userCourses, setUserCourses] = useState<UserCourse[]>();
   const [filterdCourses, setfilterdCourses] = useState(userCourses);
   const [searchQuery, setSearchQuery] = useState('');
@@ -88,7 +88,7 @@ function StudentCourses({route, navigation}: any) {
   const hideModal = () => setVisible(false);
   useEffect(() => {
     axios
-      .get(url + `/UserCourse/ByUserId/${studentId}`)
+      .get(api + `/UserCourse/ByUserId/${studentId}`)
       .then(res => res.data)
       .then(data => setUserCourses(data))
       .catch(e => console.log(e));
@@ -124,7 +124,7 @@ function StudentCourses({route, navigation}: any) {
           type: 'application/pdf',
         });
         axios
-          .post(url + `/Certification`, fData, {
+          .post(api + `/Certification`, fData, {
             headers: {
               'Content-Type': 'multipart/form-data',
             },

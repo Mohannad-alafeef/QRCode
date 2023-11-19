@@ -6,13 +6,16 @@ import {createMaterialBottomTabNavigator} from 'react-native-paper/react-navigat
 import {StyleSheet, Text, useColorScheme, View} from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import StudentStack from './AdminComponents/StudentStack';
-import AdminProfile from './AdminComponents/AdminProfile';
+
 import Courses from './AdminComponents/Courses';
+import AdminProfile from './AdminComponents/AdminProfile';
 
 const Stack = createNativeStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
 
-function App(): JSX.Element {
+function AdminDashboard({route}: any): JSX.Element {
+  const {user} = route.params;
+
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -42,6 +45,7 @@ function App(): JSX.Element {
             <Icon name="user" size={20} color={props.color} />
           ),
         }}
+        initialParams={{user: user}}
       />
     </Tab.Navigator>
   );
@@ -49,4 +53,4 @@ function App(): JSX.Element {
 
 const styles = StyleSheet.create({});
 
-export default App;
+export default AdminDashboard;

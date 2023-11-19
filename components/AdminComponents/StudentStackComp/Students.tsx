@@ -12,12 +12,12 @@ import {
   Modal,
   TouchableRipple,
 } from 'react-native-paper';
+import {api} from '../../../Configs/Connection';
 function Students({navigation}: any) {
-  let url = (globalThis as any).url as string;
   const [students, setStudents] = useState<UserModel[]>();
   useEffect(() => {
     axios
-      .get(url + '/UserAccount/2')
+      .get(api + '/UserAccount/2')
       .then(res => res.data)
       .then(data => setStudents(data))
       .catch(e => console.log(e));
