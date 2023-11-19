@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Button, Card, List} from 'react-native-paper';
+import {WebView} from 'react-native-webview';
 
 import {
   FlatList,
@@ -22,9 +23,27 @@ import {api} from '../Configs/Connection';
 
 const ResultScreen = ({navigation, route}: any) => {
   const {result} = route.params;
-  console.log(result);
+
+  
   return (
     <View style={styles.container}>
+      <Card style={styles.card}>
+            <Card.Content>
+              <Text style={styles.Text}>
+                STUTAS:<Text style={styles.Text1}>{result.status}</Text>
+              </Text>
+              <Text style={styles.Text}>
+                MARK:<Text style={styles.Text1}>{result.mark}</Text>
+              </Text>
+            </Card.Content>
+            <Card.Actions>
+             {result.status=='Certified'&& <Button
+                mode="contained"
+                onPress={() => navigation.navigate('Certification',{result:result})}>
+                Certification
+              </Button>}
+            </Card.Actions>
+          </Card>
       <FlatList
         data={result}
         keyExtractor={item => item.id.toString()}
@@ -55,6 +74,8 @@ const ResultScreen = ({navigation, route}: any) => {
 
 const DetailsScreen = ({navigation, route}: any) => {
   const {course} = route.params;
+  const {result} =route.params;
+
   return (
     <View style={styles.detailsPage}>
       <Image style={styles.image} source={{uri: course.imagUrl}} />
@@ -70,44 +91,95 @@ const DetailsScreen = ({navigation, route}: any) => {
       </Text>
 
       <Text style={styles.Text}>
-        Start Date:
-        <Text style={styles.Text1}>{course.startDate}</Text>
+        Date:
+        <Text style={styles.Text1}> {new Date(course.startDate).toDateString()} -
+                {new Date(course.endDate).toDateString()}</Text>
       </Text>
 
-      <Text style={styles.Text}>
-        End Date:
-        <Text style={styles.Text1}>{course.endDate}</Text>
-      </Text>
-
+  
       <Text style={styles.Text}>
         Time:
         <Text style={styles.Text1}>{course.time}</Text>
       </Text>
 
-      <Button
-        buttonColor="#6fccf6"
-        textColor="white"
+      <Button onPress={()=>navigation.navigate('Result',{result:result})}
+        mode="contained"
         style={{alignSelf: 'flex-end', marginRight: 10}}>
         Result
       </Button>
+      
     </View>
+  );
+};
+
+const Certification = ({navigation, route}: any) => {
+  //const {user} = route.params;
+  const {download}=route.params;
+  const {result} =route.params;
+  const [url,setUrl]=useState();
+
+  useEffect(() => {
+  
+    axios.get(api + `/Certification/ByUserCourseId/${result.id}`).then(resp => {
+      setUrl(resp.data.certificatonUrl);
+     });
+  }, []);
+
+  return (
+   <>
+
+    <WebView
+      style={{width: '100%', height: '100%'}}
+      source={{
+        uri:`https://docs.google.com/gview?embedded=true&url=${url}` ,
+      }}
+    />
+    <View style={{ height:0}}>
+    {download &&<WebView 
+      source={{
+        uri:  url,
+      }}
+    />}
+    </View> 
+    
+    </>
   );
 };
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-const StudentCourseStack = () => (
+function StudentCourseStack({route, navigation}: any): JSX.Element {
+  const {user}=route.params;
+  return(
   <Stack.Navigator>
-    <Stack.Screen name="Course" component={Courses} />
-    <Stack.Screen name="Details" component={DetailsScreen} />
+    <Stack.Screen name="Course" component={Courses} initialParams={{user:user}}/>
+    <Stack.Screen name="Details" component={DetailsScreen} initialParams={{user:user}}/>
     <Stack.Screen name="Result" component={ResultScreen} />
+    <Stack.Screen name="Certification" component={Certification} 
+    initialParams={{download:false}}
+     options={{
+      headerRight: props => (
+        <>
+        <Button  
+          onPress={() => (
+            navigation.navigate('Certification',{download:true})
+          )}>
+          <Icon style={{paddingLeft: 10}} name="download" size={20} />
+        </Button>
+      </>
+      ),
+    }}/>
+
   </Stack.Navigator>
-);
-const Courses = ({navigation}: any) => {
+  )
+  };
+const Courses = ({navigation,route}: any) => {
   const [data, setData] = useState([]);
+  const {user}=route.params;
   const Get = () => {
-    axios.get(api + `/UserAccount/UserCourses/4`).then(resp => {
+    axios.get(api + `/UserAccount/UserCourses/${user.id}`).then(resp => {
       setData(resp.data);
+   
     });
   };
 
@@ -126,12 +198,11 @@ const Courses = ({navigation}: any) => {
             <Card.Title title={item.course.courseName} />
             <Card.Content>
               <Card.Actions>
-                <Button
+                <Button mode="contained"
                   onPress={() =>
-                    navigation.navigate('Details', {course: item.course})
+                    navigation.navigate('Details', {course: item.course,result:item})
                   }
-                  buttonColor="#6fccf6"
-                  textColor="white">
+                 >
                   Details
                 </Button>
               </Card.Actions>

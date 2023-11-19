@@ -79,9 +79,13 @@ function AdminProfile({route}: any) {
               </View>
             </View>
           </Card>
-          <Button mode="contained" onPress={signOut}>
-            logout
-          </Button>
+          <Card.Actions>
+         <Button mode="contained" onPress={signOut}>
+           <Icon name='power-off'/>
+          {' '} log out
+         </Button>
+         </Card.Actions>
+      
         </Card>
       </ScrollView>
     </ImageBackground>

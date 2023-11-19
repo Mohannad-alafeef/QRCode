@@ -1,5 +1,5 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import React, { useContext, useEffect, useState } from 'react';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {
   Card,
@@ -20,16 +20,17 @@ import {
   ImageBackground,
   Image,
   ScrollView,
+  Dimensions,
 } from 'react-native';
 import axios from 'axios';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {AuthContext} from '../Configs/AuthContext';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { AuthContext } from '../Configs/AuthContext';
 
 const Stack = createNativeStackNavigator();
 
-function App({navigation, route}: any): JSX.Element {
+function App({ navigation, route }: any): JSX.Element {
   const [PasswordDisable, setFlagPass] = useState(true);
-  const {signIn} = useContext(AuthContext);
+  const { signIn } = useContext(AuthContext);
 
   const [pass, setPass] = useState('');
   const [email, setEmail] = useState('');
@@ -49,16 +50,18 @@ function App({navigation, route}: any): JSX.Element {
 
   return (
     <SafeAreaView>
-      <ImageBackground
-        source={require('../Images/Loginbackground.png')}
-        style={styles.backgroundImage}>
+      <View>
+        <ImageBackground
+          source={require('../Images/Loginbackground.png')}
+          style={[styles.backgroundImage]}>
+        </ImageBackground>
         <ScrollView>
           <Image
             source={require('../Images/LoginImage.png')}
             style={styles.loginImage}></Image>
-          <View style={{alignItems: 'center'}}>
+          <View style={{ alignItems: 'center' }}>
             <Text style={styles.text}>Welcome</Text>
-            <View style={{flexDirection: 'row', marginTop: 30}}>
+            <View style={{ flexDirection: 'row', marginTop: 30 }}>
               <Icon name="envelope-o" size={20} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
@@ -66,11 +69,11 @@ function App({navigation, route}: any): JSX.Element {
                 onChangeText={e => setEmail(e)}
               />
             </View>
-            <View style={{flexDirection: 'row', marginTop: 40}}>
+            <View style={{ flexDirection: 'row', marginTop: 40 }}>
               <Icon
                 name="lock"
                 size={20}
-                style={[styles.inputIcon, {width: 40, paddingLeft: 13}]}
+                style={[styles.inputIcon, { width: 40, paddingLeft: 13 }]}
               />
               <TextInput
                 placeholder="Password"
@@ -83,12 +86,12 @@ function App({navigation, route}: any): JSX.Element {
                   onPress={() => setFlagPass(!PasswordDisable)}
                   name="eye"
                   size={16}
-                  style={{position: 'absolute', right: 10, padding: 10}}
+                  style={{ position: 'absolute', right: 10, padding: 10 }}
                 />
               </TouchableOpacity>
             </View>
             <Button
-              style={styles.loginButtom}
+              style={{ marginTop: 20 }}
               onPress={() => CheckValidation()}
               mode="contained"
               disabled={disableLogin ? true : false}>
@@ -96,14 +99,20 @@ function App({navigation, route}: any): JSX.Element {
             </Button>
           </View>
         </ScrollView>
-      </ImageBackground>
+
+      </View>
     </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
   backgroundImage: {
-    width: '100%',
-    height: '100%',
+    //width:'100%',
+    //height: '100%',
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
   },
   loginImage: {
     width: 300,
