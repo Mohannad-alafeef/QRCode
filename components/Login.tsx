@@ -19,7 +19,7 @@ function App({navigation,route}:any): JSX.Element {
     const[pass,setPass]=useState('');
     const [email,setEmail]=useState('');
     const [disableLogin,setDis] =useState(true);
-    (globalThis as any).url="https://7ec2-109-107-225-195.ngrok-free.app/api";
+    (globalThis as any).url="https://7085-2a01-9700-1590-b00-f434-1871-ac4e-2512.ngrok-free.app/api";
     let token: any;
 
 
@@ -41,9 +41,13 @@ function App({navigation,route}:any): JSX.Element {
     },[email,pass])
 
 
-  const CheckValidation=async()=>{
+  const CheckValidation= async ()=>{
+    console.log((globalThis as any).url+'/Auth');
+    console.log(email);
+    console.log(pass);
+    
   
-    axios.post((globalThis as any).url+'/Auth',{
+    await axios.post((globalThis as any).url+'/Auth',{
       "Email":email,
       "Password":pass
     },{headers:{
@@ -76,7 +80,7 @@ function App({navigation,route}:any): JSX.Element {
         Alert.alert('username or password is incorrect');
       }
     }).catch((error)=>{
-  
+      console.log(error);
       Alert.alert('username or password is incorrect');
     })
 
