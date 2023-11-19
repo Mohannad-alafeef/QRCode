@@ -14,31 +14,22 @@ import {
 } from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import StudentProfile from './StudentProfile';
+import StudentCourseStack from './Studentcourses';
 
 const Stack = createNativeStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
-
-const HomeScreen = () => {
-  return <Text>Home</Text>;
-};
-
-const CoursesScreen = () => {
-  return <Text>courses</Text>;
-};
 
 function StudentDashboard({route}: any): JSX.Element {
   const {user} = route.params;
   return (
     <>
-      <Tab.Navigator
-        barStyle={{backgroundColor: 'white'}}
-        activeColor="#abdcfa">
+      <Tab.Navigator barStyle={{backgroundColor: 'white'}}>
         <Tab.Screen
           name="Home"
-          component={HomeScreen}
+          component={StudentCourseStack}
           options={{
             tabBarIcon: props => (
-              <Icon name="home" size={20} color={'#abdcfa'} />
+              <Icon name="home" size={20} color={props.color} />
             ),
           }}
         />
@@ -47,7 +38,7 @@ function StudentDashboard({route}: any): JSX.Element {
           component={StudentProfile}
           options={{
             tabBarIcon: props => (
-              <Icon name="user" size={20} color={'#abdcfa'} />
+              <Icon name="user" size={20} color={props.color} />
             ),
           }}
           initialParams={{user: user}}
