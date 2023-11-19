@@ -10,23 +10,38 @@
     "test": "jest"
   },
   "dependencies": {
+    "@eva-design/eva": "^2.2.0",
     "@react-navigation/material-bottom-tabs": "^6.2.19",
     "@react-navigation/material-top-tabs": "^6.6.5",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",
+    "@types/react-native-html-to-pdf": "^0.8.3",
+    "@ui-kitten/components": "^5.3.1",
     "axios": "^1.6.1",
+    "deepmerge": "^4.3.1",
     "jwt-decode": "^3.1.2",
     "react": "18.2.0",
     "react-native": "^0.72.6",
+<<<<<<< HEAD
+=======
+    "react-native-blob-util": "^0.19.4",
+    "react-native-document-picker": "^9.0.1",
+>>>>>>> c05cf40c3672d1e51c3497276c537e04f0a854ce
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.13.4",
+    "react-native-html-to-pdf": "^0.12.0",
+    "react-native-image-picker": "^7.0.2",
     "react-native-pager-view": "^6.2.2",
     "react-native-paper": "^5.11.1",
+    "react-native-pdf": "^6.7.1",
+    "react-native-qrcode-svg": "^6.2.0",
     "react-native-reanimated": "^3.5.4",
-    "react-native-safe-area-context": "^4.7.4",
+    "react-native-safe-area-context": "^3.4.1",
     "react-native-screens": "^3.27.0",
+    "react-native-svg": "^13.2.0",
     "react-native-tab-view": "^3.5.2",
-    "react-native-vector-icons": "^10.0.2"
+    "react-native-vector-icons": "^10.0.2",
+    "react-native-webview": "^13.6.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
