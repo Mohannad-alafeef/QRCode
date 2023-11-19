@@ -25,11 +25,13 @@ function StudentDashboard({route}: any): JSX.Element {
     <>
       <Tab.Navigator barStyle={{backgroundColor: 'white'}}>
         <Tab.Screen
-          name="Home"
+          name="Courses"
           component={StudentCourseStack}
+          initialParams={{user: user}}
           options={{
             tabBarIcon: props => (
-              <Icon name="home" size={20} color={props.color} />
+              <Icon name="book" size={20} color={props.color} />
+
             ),
           }}
         />

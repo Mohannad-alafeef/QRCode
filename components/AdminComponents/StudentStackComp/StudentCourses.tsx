@@ -241,7 +241,7 @@ function StudentCourses({route, navigation}: any) {
           <TextInput
             mode="outlined"
             style={styles.my_5}
-            label="End Date"
+            label="Mark"
             value={selectedUserCourse?.mark.toString()}
             onChangeText={text => {
               setSelectedUserCourse((prev: any) => ({...prev, mark: text}));
@@ -301,7 +301,7 @@ const renderOption = (title: string, i: number): React.ReactElement => (
   <SelectItem key={i.toString()} title={title} />
 );
 const update = async (item: any): Promise<any> => {
-  return await axios.put((globalThis as any).url + '/UserCourse/Update', item, {
+  return await axios.put(api + '/UserCourse/Update', item, {
     headers: {'Content-Type': 'application/json'},
   });
 };
