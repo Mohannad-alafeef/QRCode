@@ -3,6 +3,13 @@ export const pdfTemplate = (
   background: any,
   tahalufLogo: any,
   harmonyLogo: any,
+  courseName: string,
+  startDate: string,
+  endDate: string,
+  firstName: string,
+  lastName: string,
+  lhub: any,
+  scanMe: any,
 ) => `
 <!DOCTYPE html>
 <html lang="en">
@@ -12,15 +19,22 @@ export const pdfTemplate = (
     <title>Document</title>
     <style>
       body {
+        font-family: "Comfortaa";
         background-image: url("data:image/png;base64,${background}");
         background-repeat: no-repeat;
         background-size: cover;
       }
       #harmony {
         position: absolute;
-        top: 175px;
+        top: 210px;
         left: 175px;
         width: 120px;
+      }
+      #lhub {
+        position: absolute;
+        top: 160px;
+        left: 120px;
+        height: 45px;
       }
       #tahaluf {
         position: absolute;
@@ -60,22 +74,50 @@ export const pdfTemplate = (
         font-size: 2.6rem;
         margin: 4px;
       }
+      .qrBorder {
+        border: 2px solid black;
+        padding: 5px;
+        padding-bottom: 4px;
+      }
     </style>
   </head>
   <body>
     <img id="harmony" src="data:image/png;base64,${harmonyLogo}" alt="" srcset="" />
+    <img id="lhub" src="data:image/png;base64,${lhub}" alt="" srcset="" />
     <img id="tahaluf" src="data:image/png;base64,${tahalufLogo}" alt="" srcset="" />
-    <img src="data:image/png;base64,${data}" alt="Red dot" id="qr" />
+    <div id="qr">
+      <div class="qrBorder">
+    <img src="data:image/png;base64,${data}" alt="Red dot"  style="width: 100%"/>
+      </div>
+      <img src="data:image/png;base64,${scanMe}" style="width: 100%" />
+    </div>
     <div id="center">
       <p class="textFocus title">Certificate Of Completion</p>
       <p class="meduim">This is to certify</p>
-      <p class="textFocus large">Mohannad Alafeef</p>
+      <p class="textFocus large">${firstName} ${lastName}</p>
       <p class="meduim">Has successfully completed the following course</p>
-      <p class="textFocus large">Asp.Net Core Mvc</p>
+      <p class="textFocus large">${courseName}</p>
       <p class="meduim">Offerd by Harmony IT Solution L.L.C</p>
-      <p class="meduim">From:30-01-2023 - To:17-02-2023</p>
-      <p class="meduim">Total Days:12</p>
+      <p class="meduim">From:${new Date(
+        startDate,
+      ).toLocaleDateString()} - To:${new Date(endDate).toLocaleDateString()}</p>
+      <p class="meduim">Total Days:${getPeriod(startDate, endDate)}</p>
     </div>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&family=Poppins:ital,wght@0,100;0,300;0,400;1,100;1,300;1,400&display=swap"
+      rel="stylesheet" />
   </body>
 </html>
 `;
+const getPeriod = (startDate: string, endDate: string) => {
+  const oneDay = 24 * 60 * 60 * 1000;
+  const firstDate = new Date(startDate);
+  const secondDate = new Date(endDate);
+
+  const diffDays = Math.round(
+    Math.abs((firstDate.getTime() - secondDate.getTime()) / oneDay),
+  );
+  return diffDays;
+};

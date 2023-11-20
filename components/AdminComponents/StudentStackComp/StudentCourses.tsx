@@ -16,12 +16,19 @@ import {
 import axios from 'axios';
 import {UserCourse} from '../../../Models/UserCourseModel';
 import {CourseStatus} from '../../../Models/CourseStatus';
-import {IndexPath, Layout, Select, SelectItem} from '@ui-kitten/components';
+import {
+  IndexPath,
+  Input,
+  Layout,
+  Select,
+  SelectItem,
+} from '@ui-kitten/components';
 import {Alert} from 'react-native';
 import {pdfTemplate} from '../../../Configs/pdfTemplate';
 import {generatePDF} from '../../../Services/UserCourseService';
 import RNFS from 'react-native-fs';
 import {api} from '../../../Configs/Connection';
+import WebView from 'react-native-webview';
 
 function StudentCourses({route, navigation}: any) {
   const {firstName, lastName, studentId, imageUrl} = route.params;
@@ -51,6 +58,8 @@ function StudentCourses({route, navigation}: any) {
   const [pdfBackground, setPdfBackground] = useState<string>();
   const [harmonyLogo, setHarmonyLogo] = useState<string>();
   const [thalufLogo, setThalufLogo] = useState<string>();
+  const [lhubLogo, setLhubLogo] = useState<string>();
+  const [scanMeLogo, setScanMeLogo] = useState<string>();
   const [pdfOptions, setPdfOptions] = useState<{
     html: string;
     fileName: string;
@@ -74,6 +83,10 @@ function StudentCourses({route, navigation}: any) {
   RNFS.readFileAssets('tahalufuae_logo.jpeg', 'base64').then(r =>
     setThalufLogo(r),
   );
+  RNFS.readFileAssets('E-learning-platform.png', 'base64').then(r =>
+    setLhubLogo(r),
+  );
+  RNFS.readFileAssets('ScanMe.png', 'base64').then(r => setScanMeLogo(r));
 
   const displayValue = Object.keys(CourseStatus).filter(
     (v, _i) => v !== CourseStatus.Certified,
@@ -105,13 +118,27 @@ function StudentCourses({route, navigation}: any) {
       qrCode.toDataURL((data: any) => {
         setPdfOptions(prev => ({
           ...prev,
-          html: pdfTemplate(data, pdfBackground!, thalufLogo, harmonyLogo),
+          html: pdfTemplate(
+            data,
+            pdfBackground!,
+            thalufLogo,
+            harmonyLogo,
+            pdfData?.course.courseName!,
+            pdfData?.course.startDate!,
+            pdfData?.course.endDate!,
+            firstName,
+            lastName,
+            lhubLogo,
+            scanMeLogo,
+          ),
         }));
       });
     }
   }, [pdfData]);
   useEffect(() => {
-    if (pdfOptions) {
+    if (pdfData) {
+      console.log('data');
+
       generatePDF(pdfOptions).then(pdf => {
         setCertifyStage(stage2);
         const fData = new FormData();
@@ -135,7 +162,6 @@ function StudentCourses({route, navigation}: any) {
               status: CourseStatus.Certified,
             })
               .then(r => {
-                console.log(r);
                 setRefresh(!refresh);
                 setCertifyModal(false);
               })
@@ -149,6 +175,7 @@ function StudentCourses({route, navigation}: any) {
       });
     }
   }, [pdfOptions]);
+  useEffect(() => {}, [certifyModal]);
   //   useEffect(() => {
   //     if (searchQuery && courses) {
   //       filterCourses(setfilterdCourses, courses, searchQuery);
@@ -192,7 +219,7 @@ function StudentCourses({route, navigation}: any) {
               source={{uri: item.course.imagUrl}}
             />
             <Card.Actions>
-              {item.status != CourseStatus.Certified && (
+              {item.status != CourseStatus.Certified ? (
                 <>
                   <PaperButton onPress={() => showModal(item)} mode="contained">
                     Update
@@ -227,6 +254,14 @@ function StudentCourses({route, navigation}: any) {
                     </PaperButton>
                   )}
                 </>
+              ) : (
+                <PaperButton
+                  onPress={() =>
+                    navigation.navigate('Certification', {userCourse: item})
+                  }
+                  mode="contained">
+                  View Certification
+                </PaperButton>
               )}
             </Card.Actions>
           </Card>
@@ -238,16 +273,17 @@ function StudentCourses({route, navigation}: any) {
           visible={visible}
           onDismiss={hideModal}
           contentContainerStyle={styles.containerStyle}>
-          <TextInput
-            mode="outlined"
-            style={styles.my_5}
-            label="Mark"
+          <Input
+            label={'Student Mark'}
+            placeholder="Place your Text"
             value={selectedUserCourse?.mark.toString()}
-            onChangeText={text => {
-              setSelectedUserCourse((prev: any) => ({...prev, mark: text}));
-            }}
+            onChangeText={nextValue =>
+              setSelectedUserCourse((prev: any) => ({...prev, mark: nextValue}))
+            }
           />
+
           <Select
+            label={'Status'}
             selectedIndex={selectedIndex}
             style={styles.my_5}
             value={displayValue}
@@ -287,7 +323,12 @@ function StudentCourses({route, navigation}: any) {
           <Card.Content style={styles.qrDialog}>
             <QRCode
               getRef={c => setQrCode(c)}
-              value={userCourses ? userCourses![0].course.imagUrl : 'wadawd'}
+              value={
+                pdfData
+                  ? 'http://192.168.233.98:5002/' +
+                    pdfData!.userAccountId.toString()
+                  : 'wadwad'
+              }
               logo={{}}
             />
             <PaperText variant="titleMedium">{certifyStage}</PaperText>
@@ -297,6 +338,7 @@ function StudentCourses({route, navigation}: any) {
     </View>
   );
 }
+
 const renderOption = (title: string, i: number): React.ReactElement => (
   <SelectItem key={i.toString()} title={title} />
 );
