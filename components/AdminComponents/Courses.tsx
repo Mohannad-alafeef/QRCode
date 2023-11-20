@@ -13,6 +13,8 @@ import {
 } from 'react-native-paper';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {api} from '../../Configs/Connection';
+import {Datepicker, Input} from '@ui-kitten/components';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 function Courses() {
   const [courses, setCourses] = useState<CourseModel[]>();
@@ -68,8 +70,8 @@ function Courses() {
                 {item.courseName} - {item.instructor}
               </PaperText>
               <PaperText style={styles.my_5} variant="titleMedium">
-                {new Date(item.startDate).toDateString()} -
-                {new Date(item.endDate).toDateString()}
+                {new Date(item.startDate).toLocaleDateString()} -
+                {new Date(item.endDate).toLocaleDateString()}
               </PaperText>
               <PaperText style={styles.my_5} variant="titleMedium">
                 {item.time}
@@ -96,51 +98,62 @@ function Courses() {
           visible={visible}
           onDismiss={hideModal}
           contentContainerStyle={styles.containerStyle}>
-          <TextInput
-            mode="outlined"
-            style={styles.my_5}
-            label="Course Name"
+          <Input
+            label={'Course Name'}
+            placeholder="Place your Text"
             value={selectedCourse?.courseName}
-            onChangeText={text => {
-              setSelectedCourse((prev: any) => ({...prev, courseName: text}));
-            }}
+            onChangeText={text =>
+              setSelectedCourse((prev: any) => ({...prev, courseName: text}))
+            }
+            status="primary"
           />
-          <TextInput
-            mode="outlined"
-            style={styles.my_5}
-            label="Instructor"
+          <Input
+            label={'Instructor'}
+            placeholder="Place your Text"
             value={selectedCourse?.instructor}
-            onChangeText={text => {
-              setSelectedCourse((prev: any) => ({...prev, instructor: text}));
-            }}
+            onChangeText={text =>
+              setSelectedCourse((prev: any) => ({...prev, instructor: text}))
+            }
+            status="primary"
           />
-          <TextInput
-            mode="outlined"
-            style={styles.my_5}
+
+          <Datepicker
             label="Start Date"
-            value={new Date(selectedCourse?.startDate!).toLocaleDateString()}
-            onChangeText={text => {
-              setSelectedCourse((prev: any) => ({...prev, startDate: text}));
-            }}
-            onPressIn={() => setSelectedDate(selectedCourse?.startDate)}
+            placeholder="Pick Date"
+            date={new Date(selectedCourse?.startDate!)}
+            onSelect={nextDate =>
+              setSelectedCourse((prev: any) => ({
+                ...prev,
+                startDate: measureDate(nextDate),
+              }))
+            }
+            accessoryRight={props => <Icon name="calendar" size={20} />}
+            status="primary"
           />
-          <TextInput
-            mode="outlined"
-            style={styles.my_5}
+          <Datepicker
             label="End Date"
-            value={new Date(selectedCourse?.endDate!).toLocaleDateString()}
-            onChangeText={text => {
-              setSelectedCourse((prev: any) => ({...prev, endDate: text}));
+            placeholder="Pick Date"
+            date={new Date(selectedCourse?.endDate!)}
+            onSelect={nextDate => {
+              console.log(measureDate(nextDate));
+
+              setSelectedCourse((prev: any) => ({
+                ...prev,
+                endDate: measureDate(nextDate),
+              }));
             }}
+            accessoryRight={props => <Icon name="calendar" size={20} />}
+            status="primary"
           />
-          <TextInput
-            mode="outlined"
-            style={styles.my_5}
-            label="Time"
+          <Input
+            label={'Course Time'}
+            placeholder="Place your Text"
             value={selectedCourse?.time}
-            onChangeText={text => {
-              setSelectedCourse((prev: any) => ({...prev, time: text}));
-            }}
+            onChangeText={text =>
+              setSelectedCourse((prev: any) => ({...prev, time: text}))
+            }
+            status="primary"
+            style={styles.my_5}
           />
 
           <Button
@@ -165,6 +178,11 @@ function Courses() {
     </View>
   );
 }
+const measureDate = (date: Date) => {
+  return new Date(
+    date.getTime() - date.getTimezoneOffset() * 60000,
+  ).toISOString();
+};
 
 const update = async (item: any): Promise<any> => {
   return await axios.put(api + '/Course/Update', item, {
@@ -202,6 +220,9 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
 
     elevation: 5,
+  },
+  picker: {
+    borderColor: 'black',
   },
 });
 
