@@ -1,4 +1,6 @@
-import React, {useEffect, useState, useLayoutEffect, useContext} from 'react';
+
+import React, { useEffect, useState, useLayoutEffect, useContext, useRef } from 'react';
+
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {WebView} from 'react-native-webview';
 import DocumentPicker, {
@@ -69,7 +71,7 @@ const ProfileScreen = ({navigation, route}: any) => {
 
   return (
     <ImageBackground
-      source={require('../Images/profileBg.png')}
+      source={require('../Images/profilebgg.png')}
       style={styles.backgroundImage}>
       <ScrollView>
         <Card style={styles.card}>
@@ -121,7 +123,7 @@ const ProfileScreen = ({navigation, route}: any) => {
             </Button>
 
             <Button mode="contained" onPress={signOut}>
-              <Icon name="power-off" /> log out
+              Log out
             </Button>
           </Card.Actions>
         </Card>
@@ -144,20 +146,21 @@ const CV = ({navigation, route}: any) => {
 
   return (
     <>
-      <WebView
-        style={{width: '100%', height: '100%'}}
-        source={{
-          uri: `https://docs.google.com/gview?embedded=true&url=${url}`,
-        }}
-      />
-      <View style={{height: 0}}>
-        {download && (
-          <WebView
-            source={{
-              uri: url,
-            }}
-          />
-        )}
+      <View style={{ flex: 1 }}>
+        <WebView
+    
+          style={{ width: '100%', height: '100%' }}
+          source={{
+            uri: `https://docs.google.com/gview?embedded=true&url=${url}`,
+          }}
+        />
+      </View>
+      <View style={{ height: 0 }}>
+        {download && <WebView
+          source={{
+            uri: url,
+          }}
+        />}
       </View>
     </>
   );
@@ -187,7 +190,7 @@ function StudentProfile({route, navigation}: any): JSX.Element {
                   onPress={() => (
                     selectDoc(user.id), navigation.navigate('profile')
                   )}>
-                  <Icon style={{paddingLeft: 10}} name="pencil" size={20} />
+                  <Icon style={{ paddingLeft: 10 }} name="upload" size={20} />
                 </Button>
                 <Button
                   onPress={() =>
