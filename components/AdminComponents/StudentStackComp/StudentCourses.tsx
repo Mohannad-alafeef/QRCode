@@ -53,7 +53,6 @@ function StudentCourses({route, navigation}: any) {
   const onChangeSearch = (query: string) => setSearchQuery(query);
   const [visible, setVisible] = useState(false);
   const [refresh, setRefresh] = useState(false);
-  const [userCourseStatus, setUserCourseStatus] = useState<CourseStatus>();
   const [selectedIndex, setSelectedIndex] = useState<IndexPath>(
     new IndexPath(0),
   );
@@ -220,13 +219,13 @@ function StudentCourses({route, navigation}: any) {
     }
   }, [pdfOptions]);
   useEffect(() => {}, [certifyModal]);
-  //   useEffect(() => {
-  //     if (searchQuery && courses) {
-  //       filterCourses(setfilterdCourses, courses, searchQuery);
-  //     } else {
-  //       setfilterdCourses(courses);
-  //     }
-  //   }, [searchQuery]);
+  useEffect(() => {
+    if (searchQuery && userCourses) {
+      filterCourses(setfilterdCourses, userCourses, searchQuery);
+    } else {
+      setfilterdCourses(userCourses);
+    }
+  }, [searchQuery]);
   return (
     <View style={styles.container}>
       <Searchbar
@@ -236,7 +235,7 @@ function StudentCourses({route, navigation}: any) {
         style={styles.my_13}
       />
       <FlatList
-        data={userCourses}
+        data={filterdCourses}
         keyExtractor={item => item.id.toString()}
         renderItem={({item}) => (
           <Card style={[styles.my_5, styles.roundLess]}>
@@ -482,13 +481,17 @@ const styles = StyleSheet.create({
 });
 function filterCourses(
   setfilterdCourses: React.Dispatch<
-    React.SetStateAction<CourseModel[] | undefined>
+    React.SetStateAction<UserCourse[] | undefined>
   >,
-  courses: CourseModel[],
+  userCourses: UserCourse[],
   searchQuery: string,
 ) {
   setfilterdCourses(
-    courses.filter(v => v.courseName.indexOf(searchQuery) > -1),
+    userCourses.filter(
+      v =>
+        v.course.courseName.toLowerCase().indexOf(searchQuery.toLowerCase()) >
+        -1,
+    ),
   );
 }
 
