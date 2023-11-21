@@ -10,6 +10,7 @@ export const pdfTemplate = (
   lastName: string,
   lhub: any,
   scanMe: any,
+  expDate: string | undefined,
 ) => `
 <!DOCTYPE html>
 <html lang="en">
@@ -102,6 +103,9 @@ export const pdfTemplate = (
         startDate,
       ).toLocaleDateString()} - To:${new Date(endDate).toLocaleDateString()}</p>
       <p class="meduim">Total Days:${getPeriod(startDate, endDate)}</p>
+      <p class="meduim">Exp Date:${
+        expDate ? new Date(expDate).toLocaleDateString() : 'Life Time'
+      }</p>
     </div>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
