@@ -17,6 +17,7 @@ import axios from 'axios';
 import {UserCourse} from '../../../Models/UserCourseModel';
 import {CourseStatus} from '../../../Models/CourseStatus';
 import {
+  Datepicker,
   IndexPath,
   Input,
   Layout,
@@ -29,6 +30,7 @@ import {generatePDF} from '../../../Services/UserCourseService';
 import RNFS from 'react-native-fs';
 import {api} from '../../../Configs/Connection';
 import WebView from 'react-native-webview';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 function StudentCourses({route, navigation}: any) {
   const {firstName, lastName, studentId, imageUrl} = route.params;
@@ -54,12 +56,14 @@ function StudentCourses({route, navigation}: any) {
   const stage2 = 'Uploading the file...';
   const [certifyStage, setCertifyStage] = useState<string>(stage1);
   const [certifyModal, setCertifyModal] = useState<boolean>(false);
+  const [expDateModal, setExpDateModal] = useState<boolean>(false);
   const [pdfData, setPdfData] = useState<UserCourse>();
   const [pdfBackground, setPdfBackground] = useState<string>();
   const [harmonyLogo, setHarmonyLogo] = useState<string>();
   const [thalufLogo, setThalufLogo] = useState<string>();
   const [lhubLogo, setLhubLogo] = useState<string>();
   const [scanMeLogo, setScanMeLogo] = useState<string>();
+  const [expDate, setExpDate] = useState<string>(new Date().toDateString());
   const [pdfOptions, setPdfOptions] = useState<{
     html: string;
     fileName: string;
@@ -226,29 +230,12 @@ function StudentCourses({route, navigation}: any) {
                   </PaperButton>
                   {item.status == CourseStatus.Passed && (
                     <PaperButton
-                      onPress={() =>
-                        Alert.alert(
-                          'Generate Certification ?',
-                          `Do you want to certify ${firstName} ${lastName} for the course ${item.course.courseName} ?`,
-                          [
-                            {
-                              text: 'No',
-                            },
-                            {
-                              text: 'Yes',
-                              isPreferred: true,
-                              onPress: () => {
-                                setCertifyStage(stage1);
-                                setCertifyModal(true);
-                                setPdfData(item);
-                              },
-                            },
-                          ],
-                          {
-                            cancelable: true,
-                          },
-                        )
-                      }
+                      onPress={() => {
+                        setExpDateModal(true);
+                        // setCertifyStage(stage1);
+
+                        // setPdfData(item);
+                      }}
                       mode="contained">
                       Certify
                     </PaperButton>
@@ -326,7 +313,12 @@ function StudentCourses({route, navigation}: any) {
               value={
                 pdfData
                   ? 'http://192.168.233.98:5002/' +
-                    pdfData!.userAccountId.toString()
+                    generateToken(
+                      pdfData!.userAccountId,
+                      firstName,
+                      new Date().toDateString(),
+                      expDate!,
+                    )
                   : 'wadwad'
               }
               logo={{}}
@@ -335,9 +327,51 @@ function StudentCourses({route, navigation}: any) {
           </Card.Content>
         </Card>
       </Modal>
+      <Modal visible={expDateModal} onDismiss={() => setExpDateModal(false)}>
+        <Card>
+          <Card.Content>
+            <Datepicker
+              date={new Date(expDate)}
+              label="Expire Date"
+              placeholder="Pick Date"
+              onSelect={nextDate => {
+                setExpDate(measureDate(nextDate));
+                // setCertifyModal(true);
+              }}
+              accessoryRight={props => <Icon name="calendar" size={20} />}
+              style={styles.m_5}
+            />
+            <Button
+              title="Generate"
+              onPress={() => {
+                console.log(expDate);
+              }}
+            />
+          </Card.Content>
+        </Card>
+      </Modal>
     </View>
   );
 }
+const measureDate = (date: Date) => {
+  return new Date(
+    date.getTime() - date.getTimezoneOffset() * 60000,
+  ).toISOString();
+};
+const generateToken = (
+  id: number,
+  userName: string,
+  doi: string,
+  expD: string,
+) => {
+  const token = {
+    name: userName,
+    dateOfIssuance: doi,
+    expDate: expD,
+    userId: id,
+  };
+  return btoa(JSON.stringify(token));
+};
 
 const renderOption = (title: string, i: number): React.ReactElement => (
   <SelectItem key={i.toString()} title={title} />
