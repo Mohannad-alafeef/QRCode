@@ -130,13 +130,12 @@ function StudentCourses({route, navigation}: any) {
   useEffect(() => {
     if (pdfData) {
       setToken(
-        'http://192.168.233.98:5002/' +
-          generateToken(
-            pdfData!.userAccountId,
-            firstName,
-            now.toISOString(),
-            lifeTime ? undefined : expDate!,
-          ),
+        generateToken(
+          pdfData!.userAccountId,
+          firstName,
+          now.toISOString(),
+          lifeTime ? undefined : expDate!,
+        ),
       );
     }
   }, [lifeTime]);
@@ -146,13 +145,12 @@ function StudentCourses({route, navigation}: any) {
     console.log(`qr : ${qrCode != undefined}`);
     if (!token && pdfData) {
       setToken(
-        'http://192.168.233.98:5002/' +
-          generateToken(
-            pdfData!.userAccountId,
-            firstName,
-            now.toISOString(),
-            lifeTime ? undefined : expDate!,
-          ),
+        generateToken(
+          pdfData!.userAccountId,
+          firstName,
+          now.toISOString(),
+          lifeTime ? undefined : expDate!,
+        ),
       );
     }
 
@@ -354,7 +352,9 @@ function StudentCourses({route, navigation}: any) {
             <QRCode
               getRef={c => setQrCode(c)}
               value={
-                pdfData ? token : 'http://192.168.233.98:5002/' + lastToken
+                pdfData
+                  ? 'http://192.168.233.98:5002/' + token
+                  : 'http://192.168.233.98:5002/'
               }
               logo={{}}
             />
