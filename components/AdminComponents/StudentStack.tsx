@@ -3,6 +3,7 @@ import React from 'react';
 import {Text} from 'react-native';
 import Students from './StudentStackComp/Students';
 import StudentCourses from './StudentStackComp/StudentCourses';
+import CourseCertification from './StudentStackComp/CourseCertification';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +19,11 @@ function StudentStack() {
         //  options={{title:'',headerBackButtonMenuEnabled}}
         name="StudentCourses"
         component={StudentCourses}
+      />
+      <Stack.Screen
+        //  options={{title:'',headerBackButtonMenuEnabled}}
+        name="Certification"
+        component={CourseCertification}
       />
     </Stack.Navigator>
   );
