@@ -55,7 +55,7 @@ function App({ navigation, route }: any): JSX.Element {
           source={require('../Images/Loginbackground.png')}
           style={[styles.backgroundImage]}>
         </ImageBackground>
-        <ScrollView>
+        <ScrollView style={{marginHorizontal:15}}>
           <Image
             source={require('../Images/LoginImage.png')}
             style={styles.loginImage}></Image>

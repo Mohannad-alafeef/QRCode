@@ -23,7 +23,7 @@ function StudentDashboard({route}: any): JSX.Element {
   const {user} = route.params;
   return (
     <>
-      <Tab.Navigator barStyle={{backgroundColor: 'white'}}>
+      <Tab.Navigator >
         <Tab.Screen
           name="Courses"
           component={StudentCourseStack}

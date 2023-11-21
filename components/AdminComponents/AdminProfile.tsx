@@ -35,7 +35,7 @@ function AdminProfile({route}: any) {
 
   return (
     <ImageBackground
-      source={require('../../Images/profileBg.png')}
+      source={require('../../Images/profilebgg.png')}
       style={styles.backgroundImage}>
       <ScrollView>
         <Card style={styles.card}>
