@@ -14,7 +14,7 @@ import {
   Linking,
 } from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Button, Card} from 'react-native-paper';
+import {Button, Card, useTheme} from 'react-native-paper';
 import axios from 'axios';
 import {api} from '../../Configs/Connection';
 import {AuthContext} from '../../Configs/AuthContext';
@@ -30,6 +30,7 @@ const GetUserInfo = async () => {
 };
 
 function AdminProfile({route}: any) {
+  let theme = useTheme();
   const {user} = route.params;
   const {signOut} = useContext(AuthContext);
 
@@ -43,49 +44,84 @@ function AdminProfile({route}: any) {
             <Card.Cover
               source={{uri: user.imageUrl}}
               style={styles.imageCard}></Card.Cover>
-            <Text style={styles.name}>
+            <Text
+              style={{
+                ...styles.name,
+                color: theme.colors.onSecondaryContainer,
+              }}>
               {user.firstName} {user.lastName}
             </Text>
             <View style={{flexDirection: 'row'}}>
-              <Icon name="location-arrow" />
-              <Text>{user.address}</Text>
+              <Icon
+                color={theme.colors.onSurfaceVariant}
+                name="location-arrow"
+              />
+              <Text style={{color: theme.colors.onSurfaceVariant}}>
+                {user.address}
+              </Text>
             </View>
           </View>
           <Card style={styles.infotable}>
             <View>
               <View style={{flexDirection: 'row', paddingBottom: 10}}>
-                <Text>Email </Text>
-                <Text style={{position: 'absolute', right: 0}}>
+                <Text style={{color: theme.colors.onSurfaceVariant}}>
+                  Email{' '}
+                </Text>
+                <Text
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    color: theme.colors.onSurfaceVariant,
+                  }}>
                   {user.email}
                 </Text>
               </View>
               <View style={{flexDirection: 'row', paddingBottom: 10}}>
-                <Text>Phone Number </Text>
-                <Text style={{position: 'absolute', right: 0}}>
+                <Text style={{color: theme.colors.onSurfaceVariant}}>
+                  Phone Number{' '}
+                </Text>
+                <Text
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    color: theme.colors.onSurfaceVariant,
+                  }}>
                   {user.phone}
                 </Text>
               </View>
               <View style={{flexDirection: 'row', paddingBottom: 10}}>
-                <Text>Gender </Text>
-                <Text style={{position: 'absolute', right: 0}}>
+                <Text style={{color: theme.colors.onSurfaceVariant}}>
+                  Gender{' '}
+                </Text>
+                <Text
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    color: theme.colors.onSurfaceVariant,
+                  }}>
                   {user.gender}
                 </Text>
               </View>
               <View style={{flexDirection: 'row'}}>
-                <Text>BirthDate </Text>
-                <Text style={{position: 'absolute', right: 0}}>
+                <Text style={{color: theme.colors.onSurfaceVariant}}>
+                  BirthDate{' '}
+                </Text>
+                <Text
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    color: theme.colors.onSurfaceVariant,
+                  }}>
                   {user.dateOfBirth.split(' ')[0]}
                 </Text>
               </View>
             </View>
           </Card>
           <Card.Actions>
-         <Button mode="contained" onPress={signOut}>
-           <Icon name='power-off'/>
-          {' '} log out
-         </Button>
-         </Card.Actions>
-      
+            <Button mode="contained" onPress={signOut}>
+              <Icon name="power-off" /> log out
+            </Button>
+          </Card.Actions>
         </Card>
       </ScrollView>
     </ImageBackground>

@@ -26,7 +26,7 @@ import {
   DarkTheme as NavigationDarkTheme,
   DefaultTheme as NavigationDefaultTheme,
 } from '@react-navigation/native';
-import Login from './components/Login';
+import Login from './components/MainComponents/Login';
 import {customeTheme} from './Configs/CustomeTheme';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {login} from './Services/AuthService';
@@ -35,6 +35,7 @@ import {AuthContext} from './Configs/AuthContext';
 import jwt_decode from 'jwt-decode';
 import AdminDashboard from './components/AdminDashboard';
 import StudentDashboard from './components/StudentDashboard';
+import MainStack from './components/MainStack';
 const Stack = createNativeStackNavigator();
 const lightTheme = {
   ...DefaultLightTheme,
@@ -112,21 +113,19 @@ function App(): JSX.Element {
   const authContext = useMemo(
     () => ({
       signIn: async (data: any) => {
-        login(data)
-          .then((res: any) => {
-            try {
-              const token = jwt_decode(res);
-              console.log(JSON.stringify(token));
+        return login(data).then((res: any) => {
+          try {
+            const token = jwt_decode(res);
+            console.log(JSON.stringify(token));
 
-              handleToken(token);
-              AsyncStorage.setItem('userToken', res)
-                .then(() => {})
-                .catch(e => console.log(e));
-            } catch (e) {
-              console.log(e);
-            }
-          })
-          .catch(e => Alert.alert('Invalid User Name or Password'));
+            handleToken(token);
+            AsyncStorage.setItem('userToken', res)
+              .then(() => {})
+              .catch(e => console.log(e));
+          } catch (e) {
+            console.log(e);
+          }
+        });
       },
       signOut: () => {
         console.log('signOut');
@@ -158,8 +157,8 @@ function App(): JSX.Element {
               <Stack.Navigator>
                 {auth.userToken == null && (
                   <Stack.Screen
-                    name="login"
-                    component={Login}
+                    name="MainStack"
+                    component={MainStack}
                     options={{headerShown: false}}
                   />
                 )}

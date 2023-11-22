@@ -25,16 +25,14 @@ import {
   Linking,
 } from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Button, Card} from 'react-native-paper';
+import {Button, Card, useTheme} from 'react-native-paper';
 import axios from 'axios';
-import {api} from '../Configs/Connection';
-import {AuthContext} from '../Configs/AuthContext';
+import {api} from '../../Configs/Connection';
+import {AuthContext} from '../../Configs/AuthContext';
 import {
   NativeViewGestureHandler,
   TouchableOpacity,
 } from 'react-native-gesture-handler';
-import {customeTheme} from '../Configs/CustomeTheme';
-const them = customeTheme;
 
 const Stack = createNativeStackNavigator();
 const UpdateCv = async (doc: DocumentPickerResponse, id: any) => {
@@ -73,12 +71,13 @@ const selectDoc = async (id: any) => {
 };
 
 const ProfileScreen = ({navigation, route}: any) => {
+  let theme = useTheme();
   const {user} = route.params;
   const {signOut} = useContext(AuthContext);
   const [download, setd] = useState(false);
   return (
     <ImageBackground
-      source={require('../Images/profilebg3.png')}
+      source={require('../../Images/profilebg3.png')}
       style={styles.backgroundImage}>
       <ScrollView>
         <Card style={styles.card}>
@@ -86,37 +85,74 @@ const ProfileScreen = ({navigation, route}: any) => {
             <Card.Cover
               source={{uri: user.imageUrl}}
               style={styles.imageCard}></Card.Cover>
-            <Text style={styles.name}>
+            <Text
+              style={{
+                ...styles.name,
+                color: theme.colors.onSecondaryContainer,
+              }}>
               {user.firstName} {user.lastName}
             </Text>
             <View style={{flexDirection: 'row'}}>
-              <Icon name="location-arrow" />
-              <Text>{user.address}</Text>
+              <Icon
+                color={theme.colors.onSurfaceVariant}
+                name="location-arrow"
+              />
+              <Text style={{color: theme.colors.onSurfaceVariant}}>
+                {user.address}
+              </Text>
             </View>
           </View>
           <Card style={styles.infotable}>
             <View>
               <View style={{flexDirection: 'row', paddingBottom: 10}}>
-                <Text>Email </Text>
-                <Text style={{position: 'absolute', right: 0}}>
+                <Text style={{color: theme.colors.onSurfaceVariant}}>
+                  Email{' '}
+                </Text>
+                <Text
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    color: theme.colors.onSurfaceVariant,
+                  }}>
                   {user.email}
                 </Text>
               </View>
               <View style={{flexDirection: 'row', paddingBottom: 10}}>
-                <Text>Phone Number </Text>
-                <Text style={{position: 'absolute', right: 0}}>
+                <Text style={{color: theme.colors.onSurfaceVariant}}>
+                  Phone Number{' '}
+                </Text>
+                <Text
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    color: theme.colors.onSurfaceVariant,
+                  }}>
                   {user.phone}
                 </Text>
               </View>
               <View style={{flexDirection: 'row', paddingBottom: 10}}>
-                <Text>Gender </Text>
-                <Text style={{position: 'absolute', right: 0}}>
+                <Text style={{color: theme.colors.onSurfaceVariant}}>
+                  Gender{' '}
+                </Text>
+                <Text
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    color: theme.colors.onSurfaceVariant,
+                  }}>
                   {user.gender}
                 </Text>
               </View>
               <View style={{flexDirection: 'row'}}>
-                <Text>BirthDate </Text>
-                <Text style={{position: 'absolute', right: 0}}>
+                <Text style={{color: theme.colors.onSurfaceVariant}}>
+                  BirthDate{' '}
+                </Text>
+                <Text
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    color: theme.colors.onSurfaceVariant,
+                  }}>
                   {user.dateOfBirth.split(' ')[0]}
                 </Text>
               </View>
@@ -130,7 +166,7 @@ const ProfileScreen = ({navigation, route}: any) => {
             </Button>
 
             <Button mode="contained" onPress={signOut}>
-              Log out
+              <Icon name="power-off" /> log out
             </Button>
           </Card.Actions>
         </Card>
@@ -153,7 +189,7 @@ const CV = ({navigation, route}: any) => {
   const {download} = route.params;
   const [url, setUrl] = useState(user.cvUrl);
   const [loading, setLoading] = useState(false);
-  useEffect(() => {
+  useLayoutEffect(() => {
     //console.log(user.id),
     setLoading(true);
     axios.get(api + `/UserAccount/user/${user.id}`).then(resp => {
@@ -202,8 +238,6 @@ function StudentProfile({route, navigation}: any): JSX.Element {
           initialParams={{download: false, user: user}}
           component={CV}
           options={{
-            headerStyle: {backgroundColor: them.lightColors.onSecondary},
-
             headerRight: props => (
               <>
                 <Button

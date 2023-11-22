@@ -13,8 +13,8 @@ import {
   View,
 } from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import StudentProfile from './StudentProfile';
-import StudentCourseStack from './Studentcourses';
+import StudentProfile from './StudentComponents/StudentProfile';
+import StudentCourseStack from './StudentComponents/Studentcourses';
 
 const Stack = createNativeStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
@@ -23,7 +23,7 @@ function StudentDashboard({route}: any): JSX.Element {
   const {user} = route.params;
   return (
     <>
-      <Tab.Navigator >
+      <Tab.Navigator>
         <Tab.Screen
           name="Courses"
           component={StudentCourseStack}
@@ -31,7 +31,6 @@ function StudentDashboard({route}: any): JSX.Element {
           options={{
             tabBarIcon: props => (
               <Icon name="book" size={20} color={props.color} />
-
             ),
           }}
         />
