@@ -1,6 +1,15 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { Button, FlatList, Image, StyleSheet, Text, View, ImageBackground, Dimensions } from 'react-native';
-import { CourseModel } from '../../../Models/CourseModel';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
+import {
+  Button,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  ImageBackground,
+  Dimensions,
+} from 'react-native';
+import {CourseModel} from '../../../Models/CourseModel';
 import QRCode from 'react-native-qrcode-svg';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import {Buffer} from 'buffer';
@@ -15,8 +24,8 @@ import {
   Modal,
 } from 'react-native-paper';
 import axios from 'axios';
-import { UserCourse } from '../../../Models/UserCourseModel';
-import { CourseStatus } from '../../../Models/CourseStatus';
+import {UserCourse} from '../../../Models/UserCourseModel';
+import {CourseStatus} from '../../../Models/CourseStatus';
 import {
   Datepicker,
   IndexPath,
@@ -26,11 +35,12 @@ import {
   SelectItem,
   Toggle,
 } from '@ui-kitten/components';
-import { Alert } from 'react-native';
-import { pdfTemplate } from '../../../Configs/pdfTemplate';
-import { generatePDF } from '../../../Services/UserCourseService';
+import {Alert} from 'react-native';
+import {pdfTemplate} from '../../../Configs/pdfTemplate';
+import {generatePDF} from '../../../Services/UserCourseService';
 import RNFS from 'react-native-fs';
-import { api } from '../../../Configs/Connection';
+
+import {angularIp, api} from '../../../Configs/Connection';
 import WebView from 'react-native-webview';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -230,21 +240,22 @@ function StudentCourses({route, navigation}: any) {
     <View style={styles.container}>
       <ImageBackground
         source={require('../../../Images/coursesbg3.png')}
-        style={[styles.backgroundImage]}>
-      </ImageBackground>
+        style={[styles.backgroundImage]}></ImageBackground>
       <Searchbar
         placeholder="Search Course"
         onChangeText={onChangeSearch}
         value={searchQuery}
-        style={[styles.my_13, { width: 200, position: 'relative', left: 100 }]}
+        style={[styles.my_13, {width: 200, position: 'relative', left: 100}]}
       />
       <FlatList
         data={filterdCourses}
         keyExtractor={item => item.id.toString()}
-        renderItem={({ item }) => (
+        renderItem={({item}) => (
           <Card style={styles.detailscard}>
             <Card.Content>
-              <PaperText style={[styles.my_5, { fontWeight: 'bold' }]} variant="titleLarge">
+              <PaperText
+                style={[styles.my_5, {fontWeight: 'bold'}]}
+                variant="titleLarge">
                 {item.course.courseName} - {item.course.instructor}
               </PaperText>
               <PaperText style={styles.my_5} variant="titleMedium">
@@ -254,18 +265,21 @@ function StudentCourses({route, navigation}: any) {
               <PaperText style={styles.my_5} variant="titleMedium">
                 {item.course.time}
               </PaperText>
-              <View style={{ flexDirection: 'row' }}>
+              <View style={{flexDirection: 'row'}}>
                 <PaperText style={styles.my_5} variant="titleMedium">
-                  <Text style={{ fontWeight: 'bold' }}>Status</Text> : {item.status}{'     '}
+                  <Text style={{fontWeight: 'bold'}}>Status</Text> :{' '}
+                  {item.status}
+                  {'     '}
                 </PaperText>
                 <PaperText style={styles.my_5} variant="titleMedium">
-                  <Text style={{ fontWeight: 'bold' }}>Student Mark</Text> : {item.mark}
+                  <Text style={{fontWeight: 'bold'}}>Student Mark</Text> :{' '}
+                  {item.mark}
                 </PaperText>
               </View>
             </Card.Content>
             <Card.Cover
-              style={[styles.roundLess, { height: 150 }]}
-              source={{ uri: item.course.imagUrl }}
+              style={[styles.roundLess, {height: 150}]}
+              source={{uri: item.course.imagUrl}}
             />
             <Card.Actions>
               {item.status != CourseStatus.Certified ? (
@@ -290,7 +304,7 @@ function StudentCourses({route, navigation}: any) {
               ) : (
                 <PaperButton
                   onPress={() =>
-                    navigation.navigate('Certification', { userCourse: item })
+                    navigation.navigate('Certification', {userCourse: item})
                   }
                   mode="contained">
                   View Certification
@@ -311,7 +325,7 @@ function StudentCourses({route, navigation}: any) {
             placeholder="Place your Text"
             value={selectedUserCourse?.mark.toString()}
             onChangeText={nextValue =>
-              setSelectedUserCourse((prev: any) => ({ ...prev, mark: nextValue }))
+              setSelectedUserCourse((prev: any) => ({...prev, mark: nextValue}))
             }
           />
 
@@ -356,11 +370,7 @@ function StudentCourses({route, navigation}: any) {
           <Card.Content style={styles.qrDialog}>
             <QRCode
               getRef={c => setQrCode(c)}
-              value={
-                pdfData
-                  ? 'http://192.168.233.98:5002/' + token
-                  : 'http://192.168.233.98:5002/'
-              }
+              value={pdfData ? angularIp + token : angularIp}
               logo={{}}
             />
             <PaperText variant="titleMedium">{certifyStage}</PaperText>
@@ -435,7 +445,7 @@ const renderOption = (title: string, i: number): React.ReactElement => (
 );
 const update = async (item: any): Promise<any> => {
   return await axios.put(api + '/UserCourse/Update', item, {
-    headers: { 'Content-Type': 'application/json' },
+    headers: {'Content-Type': 'application/json'},
   });
 };
 
@@ -483,7 +493,6 @@ const styles = StyleSheet.create({
   detailscard: {
     padding: 10,
     margin: 20,
-
   },
   backgroundImage: {
     //width:'100%',
@@ -497,7 +506,6 @@ const styles = StyleSheet.create({
   rowContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-
   },
 });
 function filterCourses(
