@@ -35,6 +35,7 @@ function Courses() {
   const [openDate, setOpenDate] = useState<boolean>(false);
   const [visible, setVisible] = useState(false);
   const [refresh, setRefresh] = useState(false);
+  const [searchBar, setSearchBar] = useState(false);
 
   const showModal = (item: any) => {
     setSelectedCourse(item);
@@ -77,19 +78,15 @@ function Courses() {
           source={{
             uri: 'https://www.l4it.systems/wp-content/uploads/2022/07/E-learning-platform.png',
           }}
-          width={150}
           height={25}
-          style={{marginLeft: 10}}
+          style={{marginLeft: 10, flex: 1, resizeMode: 'contain'}}
         />
         <Searchbar
           placeholder="Search Course"
           inputStyle={{paddingBottom: 23}}
           onChangeText={onChangeSearch}
           value={searchQuery}
-          style={[
-            styles.my_13,
-            {width: 200, height: 40, position: 'relative', left: 20},
-          ]}
+          style={[styles.my_13, {height: 40, marginEnd: 15, flex: 1}]}
         />
       </View>
       <View style={styles.container}>
