@@ -3,6 +3,7 @@ import { Button, FlatList, Image, StyleSheet, Text, View, ImageBackground, Dimen
 import { CourseModel } from '../../../Models/CourseModel';
 import QRCode from 'react-native-qrcode-svg';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import {Buffer} from 'buffer';
 
 import {
   Card,
@@ -23,6 +24,7 @@ import {
   Layout,
   Select,
   SelectItem,
+  Toggle,
 } from '@ui-kitten/components';
 import { Alert } from 'react-native';
 import { pdfTemplate } from '../../../Configs/pdfTemplate';
@@ -32,9 +34,9 @@ import { api } from '../../../Configs/Connection';
 import WebView from 'react-native-webview';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-function StudentCourses({ route, navigation }: any) {
-  const { firstName, lastName, studentId, imageUrl } = route.params;
-
+function StudentCourses({route, navigation}: any) {
+  const {firstName, lastName, studentId, imageUrl} = route.params;
+  const now = new Date();
   useLayoutEffect(() => {
     navigation.setOptions({
       title: `${firstName} ${lastName} Courses`,
@@ -44,11 +46,12 @@ function StudentCourses({ route, navigation }: any) {
   const [userCourses, setUserCourses] = useState<UserCourse[]>();
   const [filterdCourses, setfilterdCourses] = useState(userCourses);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedUserCourse, setSelectedUserCourse] = useState<UserCourse>();
+  const [selectedUserCourse, setSelectedUserCourse] = useState<
+    UserCourse | undefined
+  >();
   const onChangeSearch = (query: string) => setSearchQuery(query);
   const [visible, setVisible] = useState(false);
   const [refresh, setRefresh] = useState(false);
-  const [userCourseStatus, setUserCourseStatus] = useState<CourseStatus>();
   const [selectedIndex, setSelectedIndex] = useState<IndexPath>(
     new IndexPath(0),
   );
@@ -57,26 +60,32 @@ function StudentCourses({ route, navigation }: any) {
   const [certifyStage, setCertifyStage] = useState<string>(stage1);
   const [certifyModal, setCertifyModal] = useState<boolean>(false);
   const [expDateModal, setExpDateModal] = useState<boolean>(false);
-  const [pdfData, setPdfData] = useState<UserCourse>();
+  const [pdfData, setPdfData] = useState<UserCourse | undefined>();
   const [pdfBackground, setPdfBackground] = useState<string>();
   const [harmonyLogo, setHarmonyLogo] = useState<string>();
   const [thalufLogo, setThalufLogo] = useState<string>();
   const [lhubLogo, setLhubLogo] = useState<string>();
   const [scanMeLogo, setScanMeLogo] = useState<string>();
+  const [lifeTime, setLifeTime] = useState<boolean>(false);
   const [expDate, setExpDate] = useState<string>(new Date().toDateString());
-  const [pdfOptions, setPdfOptions] = useState<{
-    html: string;
-    fileName: string;
-    directory: string;
-    height: number;
-    width: number;
-  }>({
+  const [token, setToken] = useState<string>();
+  const _pdfOptions = {
     html: '',
     fileName: `invoice`,
     directory: 'Invoices',
     height: 900,
     width: 1270,
-  });
+  };
+  const [pdfOptions, setPdfOptions] = useState<
+    | {
+        html: string;
+        fileName: string;
+        directory: string;
+        height: number;
+        width: number;
+      }
+    | undefined
+  >(_pdfOptions);
 
   RNFS.readFileAssets('CertificationBackground.png', 'base64').then(r =>
     setPdfBackground(r),
@@ -116,39 +125,67 @@ function StudentCourses({ route, navigation }: any) {
     }
   }, [userCourses]);
   const [qrCode, setQrCode] = useState<any>();
+  useEffect(() => {
+    if (pdfData) {
+      setToken(
+        generateToken(
+          pdfData!.userAccountId,
+          firstName,
+          now.toISOString(),
+          lifeTime ? undefined : expDate!,
+        ),
+      );
+    }
+  }, [lifeTime]);
 
   useEffect(() => {
-    if (qrCode) {
+    console.log(`pdf data :${pdfData != undefined}`);
+    console.log(`qr : ${qrCode != undefined}`);
+    if (!token && pdfData) {
+      setToken(
+        generateToken(
+          pdfData!.userAccountId,
+          firstName,
+          now.toISOString(),
+          lifeTime ? undefined : expDate!,
+        ),
+      );
+    }
+
+    if (qrCode != undefined && pdfData != undefined) {
+      console.log('generate');
+
       qrCode.toDataURL((data: any) => {
-        setPdfOptions(prev => ({
-          ...prev,
+        setPdfOptions({
+          ..._pdfOptions,
           html: pdfTemplate(
             data,
             pdfBackground!,
             thalufLogo,
             harmonyLogo,
-            pdfData?.course.courseName!,
-            pdfData?.course.startDate!,
-            pdfData?.course.endDate!,
+            pdfData!.course.courseName!,
+            pdfData!.course.startDate!,
+            pdfData!.course.endDate!,
             firstName,
             lastName,
             lhubLogo,
             scanMeLogo,
+            lifeTime ? undefined : expDate,
           ),
-        }));
+        });
       });
     }
-  }, [pdfData]);
+  }, [pdfData, qrCode]);
   useEffect(() => {
-    if (pdfData) {
-      console.log('data');
-
+    if (pdfData != undefined && pdfOptions != undefined) {
       generatePDF(pdfOptions).then(pdf => {
         setCertifyStage(stage2);
         const fData = new FormData();
-        fData.append('userCourseId', pdfData?.id.toString());
+        fData.append('userCourseId', pdfData!.id.toString());
         fData.append('dateOfIssuance', new Date().toDateString());
         fData.append('expDate', new Date().toDateString());
+
+        fData.append('token', token);
         fData.append('image', {
           uri: 'file://' + pdf.filePath,
           name: 'Certify.pdf',
@@ -162,31 +199,33 @@ function StudentCourses({ route, navigation }: any) {
           })
           .then(v => {
             update({
-              ...pdfData,
+              ...pdfData!,
               status: CourseStatus.Certified,
             })
               .then(r => {
                 setRefresh(!refresh);
                 setCertifyModal(false);
+                setToken(undefined);
               })
               .catch(e => {
                 console.log(e);
                 setCertifyModal(false);
+                setToken(undefined);
               });
-            console.log(v);
           })
           .catch(e => console.log('s2 ' + e));
       });
     }
   }, [pdfOptions]);
-  useEffect(() => { }, [certifyModal]);
-  //   useEffect(() => {
-  //     if (searchQuery && courses) {
-  //       filterCourses(setfilterdCourses, courses, searchQuery);
-  //     } else {
-  //       setfilterdCourses(courses);
-  //     }
-  //   }, [searchQuery]);
+
+  useEffect(() => {}, [certifyModal]);
+  useEffect(() => {
+    if (searchQuery && userCourses) {
+      filterCourses(setfilterdCourses, userCourses, searchQuery);
+    } else {
+      setfilterdCourses(userCourses);
+    }
+  }, [searchQuery]);
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -200,7 +239,7 @@ function StudentCourses({ route, navigation }: any) {
         style={[styles.my_13, { width: 200, position: 'relative', left: 100 }]}
       />
       <FlatList
-        data={userCourses}
+        data={filterdCourses}
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) => (
           <Card style={styles.detailscard}>
@@ -237,6 +276,7 @@ function StudentCourses({ route, navigation }: any) {
                   {item.status == CourseStatus.Passed && (
                     <PaperButton
                       onPress={() => {
+                        setPdfData(item);
                         setExpDateModal(true);
                         // setCertifyStage(stage1);
 
@@ -318,14 +358,8 @@ function StudentCourses({ route, navigation }: any) {
               getRef={c => setQrCode(c)}
               value={
                 pdfData
-                  ? 'http://192.168.233.98:5002/' +
-                  generateToken(
-                    pdfData!.userAccountId,
-                    firstName,
-                    new Date().toDateString(),
-                    expDate!,
-                  )
-                  : 'wadwad'
+                  ? 'http://192.168.233.98:5002/' + token
+                  : 'http://192.168.233.98:5002/'
               }
               logo={{}}
             />
@@ -336,21 +370,32 @@ function StudentCourses({ route, navigation }: any) {
       <Modal visible={expDateModal} onDismiss={() => setExpDateModal(false)}>
         <Card>
           <Card.Content>
+            <View style={[styles.rowContainer, styles.m_5]}>
+              <Toggle checked={lifeTime} onChange={c => setLifeTime(c)}>
+                {`LifeTime: ${lifeTime}`}
+              </Toggle>
+            </View>
             <Datepicker
               date={new Date(expDate)}
-              label="Expire Date"
               placeholder="Pick Date"
               onSelect={nextDate => {
                 setExpDate(measureDate(nextDate));
                 // setCertifyModal(true);
               }}
+              max={
+                new Date(now.getFullYear() + 10, now.getMonth(), now.getDate())
+              }
+              min={now}
               accessoryRight={props => <Icon name="calendar" size={20} />}
               style={styles.m_5}
+              disabled={lifeTime}
             />
             <Button
               title="Generate"
               onPress={() => {
-                console.log(expDate);
+                setExpDateModal(false);
+                setCertifyStage(stage1);
+                setCertifyModal(true);
               }}
             />
           </Card.Content>
@@ -364,11 +409,12 @@ const measureDate = (date: Date) => {
     date.getTime() - date.getTimezoneOffset() * 60000,
   ).toISOString();
 };
+let lastToken = '';
 const generateToken = (
   id: number,
   userName: string,
   doi: string,
-  expD: string,
+  expD: string | undefined,
 ) => {
   const token = {
     name: userName,
@@ -376,7 +422,12 @@ const generateToken = (
     expDate: expD,
     userId: id,
   };
-  return btoa(JSON.stringify(token));
+  const lastToken = Buffer.from(JSON.stringify(token), 'binary').toString(
+    'base64',
+  );
+  console.log(lastToken);
+
+  return lastToken;
 };
 
 const renderOption = (title: string, i: number): React.ReactElement => (
@@ -443,16 +494,25 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
   },
+  rowContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+
+  },
 });
 function filterCourses(
   setfilterdCourses: React.Dispatch<
-    React.SetStateAction<CourseModel[] | undefined>
+    React.SetStateAction<UserCourse[] | undefined>
   >,
-  courses: CourseModel[],
+  userCourses: UserCourse[],
   searchQuery: string,
 ) {
   setfilterdCourses(
-    courses.filter(v => v.courseName.indexOf(searchQuery) > -1),
+    userCourses.filter(
+      v =>
+        v.course.courseName.toLowerCase().indexOf(searchQuery.toLowerCase()) >
+        -1,
+    ),
   );
 }
 

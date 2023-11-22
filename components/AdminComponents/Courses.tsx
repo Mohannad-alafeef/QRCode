@@ -52,6 +52,11 @@ function Courses() {
       setfilterdCourses(courses);
     }
   }, [searchQuery]);
+  useEffect(() => {
+    if (filterdCourses) {
+      console.log(filterdCourses);
+    }
+  }, [filterdCourses]);
   const onChangeSearch = (query: string) => setSearchQuery(query);
   return (
     <View style={styles.container}>
@@ -273,7 +278,9 @@ function filterCourses(
   searchQuery: string,
 ) {
   setfilterdCourses(
-    courses.filter(v => v.courseName.indexOf(searchQuery) > -1),
+    courses.filter(
+      v => v.courseName.toLowerCase().indexOf(searchQuery.toLowerCase()) > -1,
+    ),
   );
 }
 
