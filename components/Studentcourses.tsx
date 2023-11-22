@@ -28,8 +28,8 @@ const ResultScreen = ({ navigation, route }: any) => {
 
 
   return (
-    <View style={{}}>
-      <Card style={{}}>
+    <View >
+      <Card style={{ margin: 20 }}>
         <Card.Content>
           <Text style={styles.Text}>
             STUTAS:<Text style={styles.Text1}>{result.status}</Text>
@@ -52,14 +52,17 @@ const ResultScreen = ({ navigation, route }: any) => {
 };
 
 const DetailsScreen = ({ navigation, route }: any) => {
+  
+
   const { course } = route.params;
   const { result } = route.params;
   const [showResult, Setshow] = useState(false);
-
+ 
+console.log(result)
   return (
     <View>
       <ImageBackground
-        source={require('../Images/coursesbgg.png')}
+        source={require('../Images/coursesbg3.png')}
         style={[styles.backgroundImage]}>
       </ImageBackground>
       <ScrollView>
@@ -104,24 +107,29 @@ const DetailsScreen = ({ navigation, route }: any) => {
                 <Text style={styles.Text}>
                   Status:<Text style={styles.Text1}>{'   '}{result.status}</Text>
                 </Text>
-                {result.status == 'Pass' || result.status == 'Certified' && <Text style={styles.Text}>
+                {(result.status == 'Passed' || result.status == 'Certified') && <Text style={styles.Text}>
                   MARK:<Text style={styles.Text1}>{'   '}{result.mark}</Text>
                 </Text>}
               </Card.Content>
               <Card.Actions>
                 {result.status == 'Certified' &&
+                <>
                   <Button
-
                     mode="contained"
                     onPress={() => navigation.navigate('Certification', { result: result })}>
                     Certification
-                  </Button>}
+                  </Button>
+                 
+                </>}
+                {result.status == 'Passed' && <Text>Your certificate is{'\n     '} in progress</Text>}
               </Card.Actions>
             </View>
           </Card>
 
         </View>}
+       
       </ScrollView>
+  
     </View>
 
   );
@@ -132,18 +140,23 @@ const Certification = ({ navigation, route }: any) => {
   const { download } = route.params;
   const { result } = route.params;
   const [url, setUrl] = useState();
+  const [loading,setloading]=useState('false');
 
   useEffect(() => {
-
-    axios.get(api + `/Certification/ByUserCourseId/${result.id}`).then(resp => {
-      setUrl(resp.data.certificatonUrl);
-    });
+    get()
+  
   }, []);
-
+const get =()=>{
+    axios.get(api + `/Certification/ByUserCourseId/${result.id}`).then(resp => {
+    setUrl(resp.data.certificatonUrl)
+    setloading('true')
+    console.log(resp.data.certificatonUrl)
+  });
+}
   return (
     <>
-
-      <WebView
+    
+    <WebView
         style={{ width: '100%', height: '100%' }}
         source={{
           uri: `https://docs.google.com/gview?embedded=true&url=${url}`,
@@ -151,6 +164,7 @@ const Certification = ({ navigation, route }: any) => {
       />
       <View style={{ height: 0 }}>
         {download && <WebView
+     
           source={{
             uri: url,
           }}
@@ -169,7 +183,7 @@ function StudentCourseStack({ route, navigation }: any): JSX.Element {
 
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Courses" component={CoursesScreen} initialParams={{ user: user }}
+      <Stack.Screen name="Course" component={CoursesScreen} initialParams={{ user: user }}
         options={{
 
           headerStyle: { backgroundColor: them.lightColors.onPrimary, },
@@ -202,18 +216,16 @@ function StudentCourseStack({ route, navigation }: any): JSX.Element {
         }} />
       <Stack.Screen name="Result" component={ResultScreen} />
       <Stack.Screen name="Certification" component={Certification}
+
         initialParams={{ download: false }}
         options={{
+          headerStyle: { backgroundColor: them.lightColors.onSecondary },
           headerRight: props => (
             <>
-              <Button
-                onPress={() => (
-                  navigation.navigate('Certification', { download: true })
-                )}>
                 <Icon onPress={() => (
                   navigation.navigate('Certification', { download: true })
                 )} style={{ paddingLeft: 10 }} name="download" size={20} />
-              </Button>
+          
             </>
           ),
         }} />
@@ -238,11 +250,10 @@ const CoursesScreen = ({ navigation, route }: any) => {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require('../Images/coursesbgg.png')}
+        source={require('../Images/coursesbg4.png')}
         style={[styles.backgroundImage]}>
       </ImageBackground>
       <FlatList numColumns={2}
-        key={Math.random().toString()}
         data={data}
         keyExtractor={item => item.course.id.toString()}
         renderItem={({ item }) => (
@@ -251,19 +262,6 @@ const CoursesScreen = ({ navigation, route }: any) => {
           }>
             <Card.Cover source={{ uri: item.course.imagUrl }} style={styles.cardImage} />
             <Card.Title title={item.course.courseName} />
-            <Card.Content>
-              <Card.Actions>
-                {/* <Button mode="contained" 
-                  onPress={() =>
-                    navigation.navigate('Details', {course: item.course,result:item})
-                  }
-                 >
-                  <Text style={{width:50}}>
-                  Details
-                  </Text>
-                </Button> */}
-              </Card.Actions>
-            </Card.Content>
           </Card>
         )}
       />
@@ -274,16 +272,11 @@ const CoursesScreen = ({ navigation, route }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 10,
-
   },
   card: {
     marginVertical: 10,
     width: '40%',
     height: '80%',
-    //backgroundColor: '#f2f2f2',
     padding: 25,
     marginHorizontal: 15,
 
@@ -318,7 +311,8 @@ const styles = StyleSheet.create({
 
   },
   resultCard: {
-    marginBottom: 30,
+    margin: 30,
+    marginTop: 0,
 
   },
   backgroundImage: {

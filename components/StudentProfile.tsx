@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useLayoutEffect, useContext, useRef } from 'react';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {WebView} from 'react-native-webview';
+import { WebView } from 'react-native-webview';
 import DocumentPicker, {
   DocumentPickerResponse,
 } from 'react-native-document-picker';
@@ -19,15 +19,17 @@ import {
   View,
   Linking,
 } from 'react-native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Button, Card} from 'react-native-paper';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Button, Card } from 'react-native-paper';
 import axios from 'axios';
-import {api} from '../Configs/Connection';
-import {AuthContext} from '../Configs/AuthContext';
+import { api } from '../Configs/Connection';
+import { AuthContext } from '../Configs/AuthContext';
 import {
   NativeViewGestureHandler,
   TouchableOpacity,
 } from 'react-native-gesture-handler';
+import { customeTheme } from '../Configs/CustomeTheme';
+const them = customeTheme;
 
 const Stack = createNativeStackNavigator();
 const UpdateCv = async (doc: DocumentPickerResponse, id: any) => {
@@ -44,7 +46,7 @@ const UpdateCv = async (doc: DocumentPickerResponse, id: any) => {
 
   await axios
     .put(api + '/UserAccount/UpdateCV', formData, {
-      headers: {'Content-Type': 'multipart/form-data'},
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
     .then(() => (console.log(id), Alert.alert('updated successfully')))
     .catch(err => console.log(err));
@@ -65,51 +67,51 @@ const selectDoc = async (id: any) => {
   }
 };
 
-const ProfileScreen = ({navigation, route}: any) => {
-  const {user} = route.params;
-  const {signOut} = useContext(AuthContext);
-
+const ProfileScreen = ({ navigation, route }: any) => {
+  const { user } = route.params;
+  const { signOut } = useContext(AuthContext);
+const[download,setd]=useState(false)
   return (
     <ImageBackground
-      source={require('../Images/profilebgg.png')}
+      source={require('../Images/profilebg3.png')}
       style={styles.backgroundImage}>
       <ScrollView>
         <Card style={styles.card}>
-          <View style={{alignItems: 'center'}}>
+          <View style={{ alignItems: 'center' }}>
             <Card.Cover
-              source={{uri: user.imageUrl}}
+              source={{ uri: user.imageUrl }}
               style={styles.imageCard}></Card.Cover>
             <Text style={styles.name}>
               {user.firstName} {user.lastName}
             </Text>
-            <View style={{flexDirection: 'row'}}>
+            <View style={{ flexDirection: 'row' }}>
               <Icon name="location-arrow" />
               <Text>{user.address}</Text>
             </View>
           </View>
           <Card style={styles.infotable}>
             <View>
-              <View style={{flexDirection: 'row', paddingBottom: 10}}>
+              <View style={{ flexDirection: 'row', paddingBottom: 10 }}>
                 <Text>Email </Text>
-                <Text style={{position: 'absolute', right: 0}}>
+                <Text style={{ position: 'absolute', right: 0 }}>
                   {user.email}
                 </Text>
               </View>
-              <View style={{flexDirection: 'row', paddingBottom: 10}}>
+              <View style={{ flexDirection: 'row', paddingBottom: 10 }}>
                 <Text>Phone Number </Text>
-                <Text style={{position: 'absolute', right: 0}}>
+                <Text style={{ position: 'absolute', right: 0 }}>
                   {user.phone}
                 </Text>
               </View>
-              <View style={{flexDirection: 'row', paddingBottom: 10}}>
+              <View style={{ flexDirection: 'row', paddingBottom: 10 }}>
                 <Text>Gender </Text>
-                <Text style={{position: 'absolute', right: 0}}>
+                <Text style={{ position: 'absolute', right: 0 }}>
                   {user.gender}
                 </Text>
               </View>
-              <View style={{flexDirection: 'row'}}>
+              <View style={{ flexDirection: 'row' }}>
                 <Text>BirthDate </Text>
-                <Text style={{position: 'absolute', right: 0}}>
+                <Text style={{ position: 'absolute', right: 0 }}>
                   {user.dateOfBirth.split(' ')[0]}
                 </Text>
               </View>
@@ -118,43 +120,53 @@ const ProfileScreen = ({navigation, route}: any) => {
           <Card.Actions>
             <Button
               mode="contained"
-              onPress={() => navigation.navigate('CV', {user: user})}>
+              onPress={() => navigation.navigate('CV', { user: user })}>
               CV{' '}
             </Button>
-
+            
             <Button mode="contained" onPress={signOut}>
               Log out
             </Button>
           </Card.Actions>
         </Card>
       </ScrollView>
+      {/* <View style={{ height: 0 }}>
+    {download && <WebView
+    onLoadEnd={props=>(setd(!download))}
+      source={{
+        uri: user.cvUrl,
+        
+      }}
+    />}
+  </View> */}
     </ImageBackground>
+   
   );
 };
 
-const CV = ({navigation, route}: any) => {
-  const {user} = route.params;
-  const {download} = route.params;
+const CV = ({ navigation, route }: any) => {
+  const { user } = route.params;
+  const { download } = route.params;
   const [url, setUrl] = useState(user.cvUrl);
-
+  const [loading,setLoading]=useState(false)
   useEffect(() => {
     //console.log(user.id),
     axios.get(api + `/UserAccount/user/${user.id}`).then(resp => {
-      setUrl(resp.data.cvUrl);
+      setUrl(resp.data[0].cvUrl);
+      console.log(url)
+      setLoading(true);
+      console.log(loading);
     });
-  }, []);
+  });
+ console.log(url)
 
   return (
-    <>
-      <View style={{ flex: 1 }}>
+<>
         <WebView
-    
-          style={{ width: '100%', height: '100%' }}
           source={{
             uri: `https://docs.google.com/gview?embedded=true&url=${url}`,
           }}
         />
-      </View>
       <View style={{ height: 0 }}>
         {download && <WebView
           source={{
@@ -162,12 +174,13 @@ const CV = ({navigation, route}: any) => {
           }}
         />}
       </View>
-    </>
+      </>
+ 
   );
 };
 
-function StudentProfile({route, navigation}: any): JSX.Element {
-  const {user} = route.params;
+function StudentProfile({ route, navigation }: any): JSX.Element {
+  const { user } = route.params;
   console.log(user.id);
 
   return (
@@ -176,14 +189,16 @@ function StudentProfile({route, navigation}: any): JSX.Element {
         <Stack.Screen
           name="profile"
           component={ProfileScreen}
-          options={{headerShown: false}}
-          initialParams={{user: user}}
+          options={{ headerShown: false }}
+          initialParams={{ user: user }}
         />
         <Stack.Screen
           name="CV"
-          initialParams={{download: false}}
+          initialParams={{ download: false,user:user }}
           component={CV}
           options={{
+            headerStyle: { backgroundColor: them.lightColors.onSecondary },
+
             headerRight: props => (
               <>
                 <Button
@@ -194,9 +209,9 @@ function StudentProfile({route, navigation}: any): JSX.Element {
                 </Button>
                 <Button
                   onPress={() =>
-                    navigation.navigate('CV', {download: true, user: user})
+                    navigation.navigate('CV', { download: true, user: user })
                   }>
-                  <Icon style={{paddingLeft: 10}} name="download" size={20} />
+                  <Icon style={{ paddingLeft: 10 }} name="download" size={20} />
                 </Button>
               </>
             ),
