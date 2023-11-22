@@ -1,6 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Button, FlatList, Image, StyleSheet, Text, View, ImageBackground, Dimensions } from 'react-native';
-import { CourseModel } from '../../Models/CourseModel';
+import React, {useEffect, useState} from 'react';
+import {
+  Button,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  ImageBackground,
+  Dimensions,
+} from 'react-native';
+import {CourseModel} from '../../Models/CourseModel';
 import axios from 'axios';
 import {
   Card,
@@ -11,11 +20,11 @@ import {
   TextInput,
   Modal,
 } from 'react-native-paper';
-import { launchImageLibrary } from 'react-native-image-picker';
-import { api } from '../../Configs/Connection';
-import { Datepicker, Input } from '@ui-kitten/components';
+import {launchImageLibrary} from 'react-native-image-picker';
+import {api} from '../../Configs/Connection';
+import {Datepicker, Input} from '@ui-kitten/components';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 function Courses() {
   const [courses, setCourses] = useState<CourseModel[]>();
@@ -62,28 +71,37 @@ function Courses() {
     <View style={styles.container}>
       <ImageBackground
         source={require('../../Images/coursesbg3.png')}
-        style={[styles.backgroundImage]}>
-      </ImageBackground>
+        style={[styles.backgroundImage]}></ImageBackground>
       <View style={styles.coursesHearder}>
-
-        <Image source={{ uri: 'https://www.l4it.systems/wp-content/uploads/2022/07/E-learning-platform.png' }} width={150} height={25} style={{ marginLeft: 10 }} />
+        <Image
+          source={{
+            uri: 'https://www.l4it.systems/wp-content/uploads/2022/07/E-learning-platform.png',
+          }}
+          width={150}
+          height={25}
+          style={{marginLeft: 10}}
+        />
         <Searchbar
           placeholder="Search Course"
-          inputStyle={{ paddingBottom: 23 }}
+          inputStyle={{paddingBottom: 23}}
           onChangeText={onChangeSearch}
           value={searchQuery}
-          style={[styles.my_13, { width: 200, height: 40, position: 'relative', left: 20 }]}
+          style={[
+            styles.my_13,
+            {width: 200, height: 40, position: 'relative', left: 20},
+          ]}
         />
       </View>
-      <View>
-
+      <View style={styles.container}>
         <FlatList
           data={filterdCourses}
           keyExtractor={item => item.id.toString()}
-          renderItem={({ item }) => (
+          renderItem={({item}) => (
             <Card style={[styles.detailscard]}>
               <Card.Content>
-                <PaperText style={[styles.my_5, { fontWeight: 'bold' }]} variant="titleLarge">
+                <PaperText
+                  style={[styles.my_5, {fontWeight: 'bold'}]}
+                  variant="titleLarge">
                   {item.courseName} - {item.instructor}
                 </PaperText>
                 <PaperText style={styles.my_5} variant="titleMedium">
@@ -95,8 +113,8 @@ function Courses() {
                 </PaperText>
               </Card.Content>
               <Card.Cover
-                style={[styles.roundLess, { height: 150 }]}
-                source={{ uri: item.imagUrl }}
+                style={[styles.roundLess, {height: 150}]}
+                source={{uri: item.imagUrl}}
               />
               <Card.Actions>
                 <PaperButton
@@ -120,7 +138,7 @@ function Courses() {
               placeholder="Place your Text"
               value={selectedCourse?.courseName}
               onChangeText={text =>
-                setSelectedCourse((prev: any) => ({ ...prev, courseName: text }))
+                setSelectedCourse((prev: any) => ({...prev, courseName: text}))
               }
               status="primary"
             />
@@ -129,7 +147,7 @@ function Courses() {
               placeholder="Place your Text"
               value={selectedCourse?.instructor}
               onChangeText={text =>
-                setSelectedCourse((prev: any) => ({ ...prev, instructor: text }))
+                setSelectedCourse((prev: any) => ({...prev, instructor: text}))
               }
               status="primary"
             />
@@ -167,7 +185,7 @@ function Courses() {
               placeholder="Place your Text"
               value={selectedCourse?.time}
               onChangeText={text =>
-                setSelectedCourse((prev: any) => ({ ...prev, time: text }))
+                setSelectedCourse((prev: any) => ({...prev, time: text}))
               }
               status="primary"
               style={styles.my_5}
@@ -204,7 +222,7 @@ const measureDate = (date: Date) => {
 
 const update = async (item: any): Promise<any> => {
   return await axios.put(api + '/Course/Update', item, {
-    headers: { 'Content-Type': 'application/json' },
+    headers: {'Content-Type': 'application/json'},
   });
 };
 
@@ -245,19 +263,18 @@ const styles = StyleSheet.create({
   detailscard: {
     padding: 10,
     margin: 20,
-
   },
   coursesHearder: {
-    flexDirection: 'row', alignItems: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#fff',
     //width: 300,
     //height: 60,
     shadowColor: '#000',
-    shadowOffset: { width: 1, height: 1 },
+    shadowOffset: {width: 1, height: 1},
     shadowOpacity: 0.4,
     shadowRadius: 3,
     elevation: 5,
-
   },
   backgroundImage: {
     //width:'100%',
