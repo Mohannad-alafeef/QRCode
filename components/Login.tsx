@@ -52,10 +52,10 @@ function App({ navigation, route }: any): JSX.Element {
     <SafeAreaView>
       <View>
         <ImageBackground
-          source={require('../Images/Loginbackground.png')}
+          source={require('../Images/loginbgg.png')}
           style={[styles.backgroundImage]}>
         </ImageBackground>
-        <ScrollView style={{marginHorizontal:15}}>
+        <ScrollView style={{ marginHorizontal: 15 }}>
           <Image
             source={require('../Images/LoginImage.png')}
             style={styles.loginImage}></Image>
@@ -138,7 +138,9 @@ const styles = StyleSheet.create({
   inputIcon: {
     //paddingTop:10,
     paddingRight: 10,
-    backgroundColor: '#abdcfa',
+    //backgroundColor: '#abdcfa',
+    //backgroundColor:'#3F85AF',
+    backgroundColor: '#23678F',
     color: 'white',
     alignItems: 'center',
     borderRadius: 40,

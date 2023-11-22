@@ -1,6 +1,6 @@
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import {Text} from 'react-native';
+import { Text } from 'react-native';
 import Students from './StudentStackComp/Students';
 import StudentCourses from './StudentStackComp/StudentCourses';
 import CourseCertification from './StudentStackComp/CourseCertification';
@@ -11,12 +11,12 @@ function StudentStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
         name="Students"
         component={Students}
       />
       <Stack.Screen
-        //  options={{title:'',headerBackButtonMenuEnabled}}
+        options={{ headerStyle: { backgroundColor: '#fff' }, }}
         name="StudentCourses"
         component={StudentCourses}
       />
