@@ -27,7 +27,7 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import axios from 'axios';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {AuthContext} from '../../Configs/AuthContext';
 
 const Stack = createNativeStackNavigator();
@@ -57,6 +57,7 @@ function Login({navigation, route}: any): JSX.Element {
       Alert.alert('Invalid User Name or Password');
     });
   };
+  const insets = useSafeAreaInsets();
 
   return (
     <>
@@ -66,18 +67,20 @@ function Login({navigation, route}: any): JSX.Element {
             source={require('../../Images/loginbgg.png')}
             style={[styles.backgroundImage]}
           />
-          <ScrollView>
-            <Image
-              source={require('../../Images/LoginImage.png')}
-              style={styles.loginImage}></Image>
+          <ScrollView
+            contentContainerStyle={{paddingHorizontal: 20, paddingBottom: 40}}>
             <View
               style={{
                 alignItems: 'center',
               }}>
+              <Image
+                source={require('../../Images/LoginImage.png')}
+                style={styles.loginImage}></Image>
               <Text style={styles.text}>Welcome</Text>
               <View
                 style={{
                   flexDirection: 'row',
+                  flexWrap: 'wrap',
                   marginTop: 30,
                 }}>
                 <Icon name="envelope-o" size={20} style={styles.inputIcon} />
@@ -87,13 +90,15 @@ function Login({navigation, route}: any): JSX.Element {
                     color: theme.colors.onSecondaryContainer,
                     paddingStart: 20,
                     paddingEnd: 20,
+                    flex: 1,
                   }}
                   placeholderTextColor={theme.colors.secondary}
                   placeholder="Email"
                   onChangeText={e => setEmail(e)}
                 />
               </View>
-              <View style={{flexDirection: 'row', marginTop: 40}}>
+              <View
+                style={{flexDirection: 'row', flexWrap: 'wrap', marginTop: 40}}>
                 <Icon
                   name="lock"
                   size={20}
@@ -106,15 +111,18 @@ function Login({navigation, route}: any): JSX.Element {
                     color: theme.colors.onSecondaryContainer,
                     paddingEnd: 40,
                     paddingStart: 20,
+                    flex: 1,
                   }}
                   placeholderTextColor={theme.colors.secondary}
                   onChangeText={pass => setPass(pass)}
                   secureTextEntry={PasswordDisable}
                 />
-                <TouchableOpacity onPress={() => setFlagPass(!PasswordDisable)}>
+                <TouchableOpacity
+                  activeOpacity={15}
+                  onPress={() => setFlagPass(!PasswordDisable)}>
                   <Icon
                     onPress={() => setFlagPass(!PasswordDisable)}
-                    name="eye"
+                    name={PasswordDisable ? 'eye' : 'eye-slash'}
                     size={16}
                     style={{
                       position: 'absolute',
