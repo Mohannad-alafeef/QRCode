@@ -365,52 +365,60 @@ function StudentCourses({route, navigation}: any) {
           />
         </Modal>
       </Portal>
-      <Modal visible={certifyModal} onDismiss={() => setCertifyModal(false)}>
-        <Card style={[styles.roundLess, styles.p_7, styles.m_5]}>
-          <Card.Content style={styles.qrDialog}>
-            <QRCode
-              getRef={c => setQrCode(c)}
-              value={pdfData ? angularIp + token : angularIp}
-              logo={{}}
-            />
-            <PaperText variant="titleMedium">{certifyStage}</PaperText>
-          </Card.Content>
-        </Card>
-      </Modal>
-      <Modal visible={expDateModal} onDismiss={() => setExpDateModal(false)}>
-        <Card>
-          <Card.Content>
-            <View style={[styles.rowContainer, styles.m_5]}>
-              <Toggle checked={lifeTime} onChange={c => setLifeTime(c)}>
-                {`LifeTime: ${lifeTime}`}
-              </Toggle>
-            </View>
-            <Datepicker
-              date={new Date(expDate)}
-              placeholder="Pick Date"
-              onSelect={nextDate => {
-                setExpDate(measureDate(nextDate));
-                // setCertifyModal(true);
-              }}
-              max={
-                new Date(now.getFullYear() + 10, now.getMonth(), now.getDate())
-              }
-              min={now}
-              accessoryRight={props => <Icon name="calendar" size={20} />}
-              style={styles.m_5}
-              disabled={lifeTime}
-            />
-            <Button
-              title="Generate"
-              onPress={() => {
-                setExpDateModal(false);
-                setCertifyStage(stage1);
-                setCertifyModal(true);
-              }}
-            />
-          </Card.Content>
-        </Card>
-      </Modal>
+      <Portal>
+        <Modal visible={certifyModal} onDismiss={() => setCertifyModal(false)}>
+          <Card style={[styles.roundLess, styles.p_7, styles.m_5]}>
+            <Card.Content style={styles.qrDialog}>
+              <QRCode
+                getRef={c => setQrCode(c)}
+                value={pdfData ? angularIp + token : angularIp}
+                logo={{}}
+              />
+              <PaperText variant="titleMedium">{certifyStage}</PaperText>
+            </Card.Content>
+          </Card>
+        </Modal>
+      </Portal>
+      <Portal>
+        <Modal visible={expDateModal} onDismiss={() => setExpDateModal(false)}>
+          <Card>
+            <Card.Content>
+              <View style={[styles.rowContainer, styles.m_5]}>
+                <Toggle checked={lifeTime} onChange={c => setLifeTime(c)}>
+                  {`LifeTime: ${lifeTime}`}
+                </Toggle>
+              </View>
+              <Datepicker
+                date={new Date(expDate)}
+                placeholder="Pick Date"
+                onSelect={nextDate => {
+                  setExpDate(measureDate(nextDate));
+                  // setCertifyModal(true);
+                }}
+                max={
+                  new Date(
+                    now.getFullYear() + 10,
+                    now.getMonth(),
+                    now.getDate(),
+                  )
+                }
+                min={now}
+                accessoryRight={props => <Icon name="calendar" size={20} />}
+                style={styles.m_5}
+                disabled={lifeTime}
+              />
+              <Button
+                title="Generate"
+                onPress={() => {
+                  setExpDateModal(false);
+                  setCertifyStage(stage1);
+                  setCertifyModal(true);
+                }}
+              />
+            </Card.Content>
+          </Card>
+        </Modal>
+      </Portal>
     </View>
   );
 }

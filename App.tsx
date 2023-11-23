@@ -17,6 +17,7 @@ import {
   adaptNavigationTheme,
   ActivityIndicator,
   MD2Colors,
+  useTheme,
 } from 'react-native-paper';
 
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -147,7 +148,11 @@ function App(): JSX.Element {
   const paperTheme =
     colorScheme === 'dark' ? CombinedDarkTheme : CombinedDefaultTheme;
   if (auth.isLoading) {
-    return <SplashScreen />;
+    return (
+      <PaperProvider theme={lightTheme}>
+        <SplashScreen />
+      </PaperProvider>
+    );
   }
   return (
     <AuthContext.Provider value={authContext}>
@@ -188,8 +193,10 @@ function App(): JSX.Element {
   );
 }
 const SplashScreen = () => {
+  const theme = useTheme();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: theme.colors.surface}]}>
       <Image
         source={{
           uri: 'https://www.l4it.systems/wp-content/uploads/2022/07/E-learning-platform.png',
